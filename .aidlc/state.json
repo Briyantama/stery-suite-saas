@@ -1,0 +1,287 @@
+{
+  "version": 1,
+  "id": "aidlc-20261114051752-6a2ffc",
+  "task": "workflowz orchestrate\nscan all repo to see the progress of each repo has reached where and make a document for aidlc smoothly running. I will answer for the confirmation needed.",
+  "scope": "classic",
+  "scopeReason": "no keyword matched; fallback default scope \"classic\"",
+  "scopeLocked": false,
+  "projectType": "brownfield",
+  "createdAt": "2026-11-14T05:17:52.576Z",
+  "updatedAt": "2026-11-14T05:17:52.592Z",
+  "order": [
+    "workspace-scaffold",
+    "workspace-detection",
+    "state-init",
+    "reverse-engineering",
+    "practices-discovery",
+    "requirements-analysis",
+    "user-stories",
+    "refined-mockups",
+    "domain-design",
+    "units-generation",
+    "contract-design",
+    "delivery-planning",
+    "functional-design",
+    "nfr-requirements",
+    "nfr-design",
+    "infrastructure-design",
+    "code-generation",
+    "build-and-test"
+  ],
+  "stages": {
+    "workspace-scaffold": {
+      "slug": "workspace-scaffold",
+      "status": "approved",
+      "attempts": 1,
+      "stepsDone": [
+        "main"
+      ],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": [
+        "workspace-scaffold-main-a1-1"
+      ],
+      "startedAt": "2026-11-14T05:17:52.577Z",
+      "endedAt": "2026-11-14T05:17:52.583Z",
+      "lastValidation": {
+        "passed": true,
+        "at": "2026-11-14T05:17:52.583Z",
+        "checks": [
+          {
+            "name": "controller-action",
+            "pass": true,
+            "detail": "created .aidlc/records and .aidlc/attest"
+          }
+        ],
+        "artifacts": []
+      }
+    },
+    "workspace-detection": {
+      "slug": "workspace-detection",
+      "status": "approved",
+      "attempts": 1,
+      "stepsDone": [
+        "main"
+      ],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": [
+        "workspace-detection-main-a1-1"
+      ],
+      "startedAt": "2026-11-14T05:17:52.586Z",
+      "endedAt": "2026-11-14T05:17:52.588Z",
+      "lastValidation": {
+        "passed": true,
+        "at": "2026-11-14T05:17:52.588Z",
+        "checks": [
+          {
+            "name": "controller-action",
+            "pass": true,
+            "detail": "detected brownfield"
+          }
+        ],
+        "artifacts": []
+      }
+    },
+    "state-init": {
+      "slug": "state-init",
+      "status": "approved",
+      "attempts": 1,
+      "stepsDone": [
+        "main"
+      ],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": [
+        "state-init-main-a1-1"
+      ],
+      "startedAt": "2026-11-14T05:17:52.590Z",
+      "endedAt": "2026-11-14T05:17:52.591Z",
+      "lastValidation": {
+        "passed": true,
+        "at": "2026-11-14T05:17:52.591Z",
+        "checks": [
+          {
+            "name": "controller-action",
+            "pass": true,
+            "detail": "workflow state initialized"
+          }
+        ],
+        "artifacts": []
+      }
+    },
+    "reverse-engineering": {
+      "slug": "reverse-engineering",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "practices-discovery": {
+      "slug": "practices-discovery",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "requirements-analysis": {
+      "slug": "requirements-analysis",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "user-stories": {
+      "slug": "user-stories",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "refined-mockups": {
+      "slug": "refined-mockups",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "domain-design": {
+      "slug": "domain-design",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "units-generation": {
+      "slug": "units-generation",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "contract-design": {
+      "slug": "contract-design",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "delivery-planning": {
+      "slug": "delivery-planning",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "functional-design": {
+      "slug": "functional-design",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "nfr-requirements": {
+      "slug": "nfr-requirements",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "nfr-design": {
+      "slug": "nfr-design",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "infrastructure-design": {
+      "slug": "infrastructure-design",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "code-generation": {
+      "slug": "code-generation",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    },
+    "build-and-test": {
+      "slug": "build-and-test",
+      "status": "pending",
+      "attempts": 0,
+      "stepsDone": [],
+      "feedback": [],
+      "dispatches": [],
+      "attestations": []
+    }
+  },
+  "approvals": [
+    {
+      "id": "approval-1",
+      "stage": "workspace-scaffold",
+      "step": "main",
+      "kind": "auto",
+      "decision": "approved",
+      "by": "controller-auto",
+      "at": "2026-11-14T05:17:52.583Z",
+      "attestation": "workspace-scaffold-main-a1-1",
+      "auditSeq": 2
+    },
+    {
+      "id": "approval-2",
+      "stage": "workspace-detection",
+      "step": "main",
+      "kind": "auto",
+      "decision": "approved",
+      "by": "controller-auto",
+      "at": "2026-11-14T05:17:52.588Z",
+      "attestation": "workspace-detection-main-a1-1",
+      "auditSeq": 4
+    },
+    {
+      "id": "approval-3",
+      "stage": "state-init",
+      "step": "main",
+      "kind": "auto",
+      "decision": "approved",
+      "by": "controller-auto",
+      "at": "2026-11-14T05:17:52.591Z",
+      "attestation": "state-init-main-a1-1",
+      "auditSeq": 6
+    }
+  ],
+  "status": "active",
+  "auditSeq": 6,
+  "auditHead": "3f1cb0ad21e0977f3897fd04512ad8049169ab6e1f3ca1a4ce365d425591a423"
+}

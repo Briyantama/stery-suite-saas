@@ -1,0 +1,39 @@
+{
+  "id": "workspace-detection-main-a1-1",
+  "stage": "workspace-detection",
+  "step": "main",
+  "attempt": 1,
+  "kind": "stage",
+  "createdAt": "2026-11-14T05:17:52.588Z",
+  "validation": {
+    "passed": true,
+    "at": "2026-11-14T05:17:52.588Z",
+    "checks": [
+      {
+        "name": "controller-action",
+        "pass": true,
+        "detail": "detected brownfield"
+      }
+    ],
+    "artifacts": []
+  },
+  "dispatches": [],
+  "artifactHashes": {},
+  "auditSeqBefore": 3,
+  "claim": "controller-validated",
+  "projectType": "brownfield",
+  "evidence": [
+    "manifest: HRIS-Stery/Makefile",
+    "manifest: HRIS-Stery/apps/api/Dockerfile",
+    "manifest: HRIS-Stery/apps/api/go.mod",
+    "source: HRIS-Stery/apps/web/eslint.config.js",
+    "manifest: HRIS-Stery/apps/web/package.json",
+    "source: HRIS-Stery/apps/web/playwright.config.ts",
+    "source: HRIS-Stery/apps/web/src/app.d.ts",
+    "source: HRIS-Stery/apps/web/src/hooks.server.test.ts",
+    "source: HRIS-Stery/apps/web/src/hooks.server.ts",
+    "source: HRIS-Stery/apps/web/svelte.config.js",
+    "manifest: HRIS-Stery/apps/web/tsconfig.json",
+    "source: HRIS-Stery/apps/web/vite.config.ts"
+  ]
+}

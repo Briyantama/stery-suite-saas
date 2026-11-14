@@ -1,6 +1,6 @@
 # Stery Suite progress tracking
 
-Tracks the suite roadmap (stages S0-S5 in `../00_Analisis_Dampak_Risiko.en.md` section 7) across SELA (`SEL`), POS-Stery (`POS`), HRIS-Stery (`HRS`), `stery-kit` (`KIT`) and the future platform / suite-level work (`SUI`). Same workflow as SELA's tracker (`SELA/docs/tracking/README.md`).
+Tracks the suite roadmap (stages S0-S5 in `../00_Analisis_Dampak_Risiko.en.md` section 7) across SELA (`SEL`), POS-Stery (`POS`), HRIS-Stery (`HRS`), `stery-kit` (`KIT`) and the future platform / suite-level work (`SUI`). Same workflow as SELA's tracker (`SELA/docs/tracking/README.md`); the SELA rollup reads `SELA/docs/tracking/tracker.json` live.
 
 ## Files
 
@@ -34,4 +34,4 @@ A task is `Completed` only when: a GREEN commit hash (validated in that product'
 4. Run `python scripts/build_tracker.py` and fix what it reports.
 5. Put FR IDs in the product commit body so `git log --grep "FR-POS-04"` finds them.
 
-The suite root has no commits yet: commit `docs/tracking/` and `scripts/` once the suite repo gets its first commit.
+The suite root repo (Briyantama/stery-suite-saas, branch master) tracks `docs/tracking/` and `scripts/`; commit hashes for SUI tasks stay n/a (reason).

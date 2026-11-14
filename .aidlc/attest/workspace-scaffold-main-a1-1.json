@@ -1,0 +1,26 @@
+{
+  "id": "workspace-scaffold-main-a1-1",
+  "stage": "workspace-scaffold",
+  "step": "main",
+  "attempt": 1,
+  "kind": "stage",
+  "createdAt": "2026-11-14T05:17:52.583Z",
+  "validation": {
+    "passed": true,
+    "at": "2026-11-14T05:17:52.583Z",
+    "checks": [
+      {
+        "name": "controller-action",
+        "pass": true,
+        "detail": "created .aidlc/records and .aidlc/attest"
+      }
+    ],
+    "artifacts": []
+  },
+  "dispatches": [],
+  "artifactHashes": {},
+  "auditSeqBefore": 1,
+  "claim": "controller-validated",
+  "projectType": "brownfield",
+  "evidence": []
+}
