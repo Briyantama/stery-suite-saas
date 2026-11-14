@@ -1,0 +1,21 @@
+﻿Phase / Milestone,Module / Service,Task ID,Summary of implemented functionality,Breaking changes / structural refactors,Deviations & technical decisions,Commits,Date
+S0: Documents + SELA closed-beta closure,SUI,S0.6,"BRD, PRD, FSD and impact analysis written in en and id for the suite.",none,D-SUI-01..D-SUI-12 defined in BRD section 9.1.,n/a (no suite-root git commits; documents only),2026-11-11
+S1: stery-kit extraction + platform IAM/ENT,KIT,S1.1,"Initialised stery-kit; added shared Go platform packages, web API client/proxy/session helpers and design system tokens with Svelte components; later hardening (ratelimit lua, XAUTOCLAIM, issuer/audience checks, PageParams cap).","Removed envconf, exported authn.Bearer.","D5: one shared module for all three products (owner, 2026-11-08).",472d9a1 71fbc6c 124624e 95674dc 3b02042 175982a 56cdd91 24e4e98 a3b6774,2026-11-09
+S1: stery-kit extraction + platform IAM/ENT,SEL,S1.2,"SELA imports stery-kit for httpx, health, objstore, db wrappers and web client/tokens; API image built from suite root; CI pins kit.",SELA internal platform packages deleted; build context is the suite root.,Kit pinned by commit in CI (113ce41).,3bc3822 1e92fd6 e06ccd6 dedafe4 113ce41,2026-11-09
+S2: POS alignment,POS,S2.7,Removed fabricated dashboard data and placeholder UI from admin and cashier.,none,Dashboard shows payment mix only when API returns it.,318b746,2026-11-09
+S2: POS alignment,POS,S2.9,"Replaced six gRPC services and chi gateway with apps/api single Go module on stery-kit; deleted legacy services, gateway and proto.","Yes: gRPC and gateway removed, REST /api/v1 only.",D1 single module; services become packages.,0204109 294eb42,2026-11-08
+S2: POS alignment,POS,S2.13,SQL schema moved to embedded goose migrations; slog replaces zap; Postgres 18.6 with uuidv7 defaults (0064).,golang-migrate files removed.,ADR 0001.,0204109 294eb42,2026-11-08
+S2: POS alignment,POS,S2.17,"Loyalty award admin-only, once per sale.",Cashiers can no longer call the loyalty endpoint.,Auto-award after sale still open (S2.1).,8aacef5,2026-11-09
+S2: POS alignment,POS,S2.18,Negative stock blocked atomically with CHECK constraint.,none,,17bb72e,2026-11-09
+S2: POS alignment,POS,S2.19,"receive_stock runs in one transaction, once per order.",none,,d39a914,2026-11-09
+S2: POS alignment,POS,S2.20,Category from another tenant rejected on product create.,none,,31465e5,2026-11-09
+S3: HRIS alignment,HRS,S3.8,"One Go module, REST /api/v1: Seven gRPC services collapsed into single module apps/api on stery-kit with net/http mux under /api/v1 (auth, employee, attendance, leave, notification, audit, document).",Laravel/gRPC services replaced by REST /api/v1,,d399fe8,2026-11-08
+S3: HRIS alignment,HRS,S3.9,"Remove Laravel gateway and legacy services: Laravel api-gateway, legacy microservices and proto removed.",,,9aa3059,2026-11-08
+S3: HRIS alignment,HRS,S3.10,Migrations fixed and moved to goose: Attendance partial unique index replaces invalid constraint; RLS policies with WITH CHECK; goose via kit/migrate; app grants narrowed (0072); audit RLS (0062); uuidv7 defaults (0074); indexes (0075).,,,d399fe8 7cf292f 97f1ee5,2026-11-09
+S3: HRIS alignment,HRS,S3.12,"Defer payroll, tax, recruitment, performance (ADR-0004): Deferred to Phase 2 by ADR-0004; no payroll/tax/recruitment/performance code in apps/api.",,,,2026-05-30
+S3: HRIS alignment,HRS,S3.13,Fix refresh-token rotation race: Refresh tokens consumed atomically and user reloaded on refresh.,,,6211a02,2026-11-09
+S3: HRIS alignment,HRS,S3.14,Fix document authorization: Document access restricted to owner and HR admin; deleted files hidden.,,,f69c106 8828366,2026-11-09
+S3: HRIS alignment,HRS,S3.16,Fix notification channel config wipe: Updating one channel keeps the other channels.,,,bb6d596,2026-11-09
+S3: HRIS alignment,HRS,S3.17,"Fix leave lost update, self-approval, overlap: Atomic balance, status guard, overlap and self-approval checks.",,,5335a8a a3c5703,2026-11-09
+S3: HRIS alignment,HRS,S3.18,Audit table RLS: RLS enforced with default partition on audit entries.,,,ae1fb5f df6eb31,2026-11-09
+S3: HRIS alignment,HRS,S3.19,Remove hardcoded password from init-postgres: App role password from HRIS_APP_PASSWORD env; compose runs API as hris_app.,,,514acdd,2026-11-09

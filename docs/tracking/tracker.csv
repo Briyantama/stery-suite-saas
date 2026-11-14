@@ -1,0 +1,129 @@
+﻿Phase / Milestone,Task ID,Task & Description,Product,Status,TDD: RED commit,TDD: GREEN commit,Test coverage,FR IDs,Key Deliverables / Artifacts,Last Updated
+S0: Documents + SELA closed-beta closure,S0.1,"Gate 1: Midtrans webhook proven on a public URL
+Signed Midtrans QRIS webhook activates an order on a public URL. Code exists and sandbox QRIS simulator test passes (SELA T29.1, commits fed68f7 a399f9a, 0532b70) but SELA M5.1 (recorded sandbox transcript with signed webhook) is Not Started; no public-URL proof found.",SEL,In Progress,,,,"FR-SUI-SEC.12, FR-SUI-03.4","SELA/docs/tracking/tracker.json M5.1, T29.1; SELA/apps/api/services/payment/midtrans.go; missing: recorded public-URL webhook transcript",2026-11-11
+S0: Documents + SELA closed-beta closure,S0.2,"Gate 2: Default retention decision recorded
+Retention defaults implemented (migration 0015 plans.retention_days 7/30/365/730, RETENTION_DAYS_* override; SELA T25.1, T18.3 Pending Verification) but OQ-8 in the impact analysis still lists the decision as tbd, so the owner decision is not recorded.",SEL,Pending Verification,,31387af,,FR-SUI-SEC.10,"SELA/docs/tracking/tracker.json T25.1, T18.3; docs/00_Analisis_Dampak_Risiko.en.md OQ-8",2026-11-11
+S0: Documents + SELA closed-beta closure,S0.3,"Gate 3: 20 Pending Verification SELA tasks closed or deferred
+SELA tracker has 20 tasks in Pending Verification (T11.3, T15.1, T16.1, T17.1, T18.1-T18.3, T19.1-T19.4, T20.1, T23.1, T25.1-T29.1, T37.1, T38.1) as of 2026-11-11; none closed or consciously deferred in the tracker.",SEL,In Progress,,,,,SELA/docs/tracking/tracker.json (20 Pending Verification rows),2026-11-11
+S0: Documents + SELA closed-beta closure,S0.4,"Gate 4: Media origin separation verified
+S3_PUBLIC_ENDPOINT signs URLs for the browser-facing origin and deploy/Caddyfile sets headers (SELA T18.1, Pending Verification, green a559776); no verification that media is served from a separate origin was recorded.",SEL,Pending Verification,,a559776,,FR-SUI-08.12,SELA/deploy/Caddyfile; SELA/docs/tracking/tracker.json T18.1,2026-11-11
+S0: Documents + SELA closed-beta closure,S0.5,"Gate 5: guest_cap, video and zip_full_resolution enforcement verified
+Guest-cap enforcement under per-event advisory lock is implemented and tested (SELA T19.2 Pending Verification, green 5ca5a59). Video and zip_full_resolution enforcement: no Completed/verified tracker row found [INFERENCE: partly covered by T27.1/T17.1, both Pending Verification].",SEL,Pending Verification,,5ca5a59,,FR-SUI-02.9,"SELA/docs/tracking/tracker.json T19.2, T17.1, T27.1",2026-11-11
+S0: Documents + SELA closed-beta closure,S0.6,"BRD, PRD and FSD set written for the suite
+Suite documents exist in en and id: BRD_Stery_Suite, PRD_Stery_Suite, FSD_Stery_Suite, 00_Analisis_Dampak_Risiko; product FSDs for HRIS and POS exist.",SUI,Completed,,n/a (no suite-root git commits; documents only),,FR-SUI-08.8,"docs/BRD_Stery_Suite.en.md, docs/PRD_Stery_Suite.en.md, docs/FSD_Stery_Suite.en.md, docs/00_Analisis_Dampak_Risiko.en.md",2026-11-11
+S1: stery-kit extraction + platform IAM/ENT,S1.1,"Extract stery-kit from SELA internal packages
+stery-kit repo created with Go module (httpx health objstore migrate testdb pgtenant events authn ratelimit) and @stery/kit web package (API client, design tokens, UI components). piicrypt, audit, config not lifted [INFERENCE from kit/go listing].",KIT,Completed,,472d9a1 71fbc6c 124624e 95674dc,,"FR-SUI-08.3, FR-SUI-08.6, FR-SUI-08.14","stery-kit/go, stery-kit/web",2026-11-11
+S1: stery-kit extraction + platform IAM/ENT,S1.2,"SELA adopts stery-kit with behaviour preserved
+SELA internal httpx/health/objstore replaced by kit, db/testdb wrap the kit, web uses @stery/kit, CI checks out a pinned kit commit. Vault reports svelte-check 0 errors, 861 Vitest tests and Go build/vet passing; not independently re-run, hence Pending Verification.",SEL,Pending Verification,,3bc3822 1e92fd6 e06ccd6 113ce41,,FR-SUI-08.14,"SELA/apps/api, SELA/apps/web, .github CI",2026-11-11
+S1: stery-kit extraction + platform IAM/ENT,S1.3,"Platform IAM (identity, org, session, RBAC)
+No platform repo or code exists in the suite root.",SUI,Not Started,,,,"FR-SUI-01.1, FR-SUI-01.2, FR-SUI-01.4, FR-SUI-01.5, FR-SUI-01.7, FR-SUI-01.8, FR-SUI-01.11, FR-SUI-01.13",stery-suite platform (not created),2026-11-11
+S1: stery-kit extraction + platform IAM/ENT,S1.4,"Platform ENT (catalogue, entitlements, signed snapshot)
+No platform code exists.",SUI,Not Started,,,,"FR-SUI-02.1, FR-SUI-02.2, FR-SUI-02.3, FR-SUI-02.4, FR-SUI-02.5",stery-suite platform (not created),2026-11-11
+S1: stery-kit extraction + platform IAM/ENT,S1.5,"Proto contract stery.platform.v1
+No .proto file with package stery.platform.v1 found in the suite.",SUI,Not Started,,,,"FR-SUI-01.5, FR-SUI-02.4, FR-SUI-05.3, FR-SUI-07.8",proto/stery/platform/v1 (not created),2026-11-11
+S2: POS alignment,S2.1,"Loyalty in-process after sale commit
+Gate 1: points awarded in-process after the sale commits, once per sale_id. Today only the admin-only endpoint POST /api/v1/customers/{customer_id}/loyalty exists (8aacef5 made it admin-only and once per sale via migration 0062); services/sales has no loyalty call.",POS,Not Started,,,,"FR-POS-06.3, FR-POS-04.9",apps/api/services/customer/application/commands/add_loyalty_points.go; apps/api/services/sales,2026-11-11
+S2: POS alignment,S2.2,"REST parity with module operations
+Gate 2: every module operation reachable over /api/v1. Present: login, refresh, logout, logout-all, sessions, products CRUD-read/create/update, inventory list/get/add/threshold/stock, sales create/get/report, suppliers, purchase-orders list/create/receive, customers list/create/get/loyalty. Missing: GET purchase order by id, category endpoints, stock ledger. Admin UI for threshold and adjustment unverified.",POS,In Progress,,0204109,,"FR-POS-04.8, FR-POS-05.4, FR-POS-02.3, FR-POS-02.6, FR-POS-03.7",apps/api/services/*/http.go; apps/api/cmd/api/routes.go,2026-11-11
+S2: POS alignment,S2.3,"CI green with SELA check.sh pattern
+Gate 3: scripts/check.sh (format, vet, lint, tests with coverage, web checks via CHECK_STAGES) and .github/workflows/ci.yml with image, go (Postgres 18.6 service + Dragonfly) and web jobs, kit checked out as sibling. Workflow exists; a green run on the remote was not observed [INFERENCE].",POS,Pending Verification,,76d154e e7eae12,,FR-POS-SEC.4,scripts/check.sh; .github/workflows/ci.yml,2026-11-11
+S2: POS alignment,S2.4,"RLS WITH CHECK on every policy
+Gate 4: of 15 tenant_isolation policies only 8 have WITH CHECK; missing on product.categories, inventory.stock_thresholds, sales.sales, sales.sale_items, sales.receipts, supplier.purchase_orders, supplier.purchase_order_items, customer.loyalty_points (grep of apps/api/internal/db/migrations, no later migration adds them). Needs a new goose migration.",POS,Not Started,,,,"FR-POS-SEC.2, FR-POS-SEC.1",apps/api/internal/db/migrations,2026-11-11
+S2: POS alignment,S2.5,"Committed secrets rotated and purged
+Gate 5: ecosystem.config.cjs now reads secrets from .env (untracked) and deploy/docker/init-postgres.sql is gone from the tree (1e7e888, 294eb42); keys/ is untracked. Git history was not rewritten (54 commits intact) and rotation of the old values is not evidenced, so history purge and rotation remain open.",POS,In Progress,,1e7e888 294eb42,,FR-POS-SEC.6,ecosystem.config.cjs; .env.example; git history,2026-11-11
+S2: POS alignment,S2.6,"Postgres integration tests run
+Gate 6: repository tests use TEST_DATABASE_URL against real Postgres (product, sales, supplier repositories, internal/db uuid test, rls test helper 1e7e888); check.sh and CI provide the database. No dedicated cross-tenant test per module found; full-suite pass not re-run for this tracker [INFERENCE].",POS,Pending Verification,,1e7e888 0204109,,FR-POS-SEC.4,apps/api/services/*/infrastructure/postgres/*_test.go; apps/api/internal/testdb,2026-11-11
+S2: POS alignment,S2.7,"Fake dashboard data removed
+Gate 7: fabricated dashboard figures and placeholder UI removed; dashboard only renders payment_mix when the API returns it (no 55/30/15 fallback in grep).",POS,Completed,,318b746,,"FR-POS-07.4, FR-POS-07.3",apps/admin/src/routes/(app)/dashboard/+page.svelte,2026-11-11
+S2: POS alignment,S2.8,"PPN and receipt decision recorded
+Gate 8: D-POS-01 (PPN) and D-POS-02 (receipt) are still tbd (OQ-8, FSD_POS 4.5 Not started); no decision record in docs/adr (only ADR 0001, 0002) and no tax column in sales migrations.",POS,Not Started,,,,"FR-POS-04.5, FR-POS-04.7",docs/adr; apps/api/internal/db/migrations/0041_sales_create_sales_schema.sql,2026-11-11
+S2: POS alignment,S2.9,"One Go module for the API (delta 2.7.2)
+Six gRPC services plus chi gateway replaced by apps/api single module: cmd/api, cmd/migrate, services/<name>, net/http ServeMux /api/v1; legacy services, gateway and proto deleted.",POS,Completed,,0204109 294eb42,,FR-SUI-01.4,apps/api; docs/adr/0001-single-module-go-api-on-sela-stack.md,2026-11-11
+S2: POS alignment,S2.10,"Sale saga becomes one DB transaction
+Delta 2.7.2: create_sale.go is still a synchronous saga (DeductStock per item, compensating RestoreStock, then persist, best-effort publish); stock deduction and sale persistence do not share one transaction. No client_sale_id idempotency migration.",POS,Not Started,,,,"FR-POS-04.2, FR-POS-04.3",apps/api/services/sales/application/commands/create_sale.go,2026-11-11
+S2: POS alignment,S2.11,"NATS to Dragonfly streams and outbox
+Delta 2.7.2: NATS JetStream replaced by Dragonfly Streams (ADR 0002, kit events package, Sale.Completed on pos:events smoke-verified 2026-11-08). Transactional outbox in the sale/receive transactions and idempotent consumers are not implemented.",POS,In Progress,,0204109 a69b430,,"FR-POS-04.9, FR-POS-03.5, FR-POS-05.7",docs/adr/0002-dragonfly-streams-replace-nats-jetstream.md; apps/api/services/*/infrastructure,2026-11-11
+S2: POS alignment,S2.12,"JWT replaced by opaque session
+Delta 2.7.2: API still issues and verifies RS256 JWT access/refresh tokens (authn.Verifier, services/auth jwt signer, keys/ pair); web apps wrap them in an HttpOnly kit session cookie only. Opaque session with store_id attribute not built.",POS,Not Started,,,,"FR-POS-01.10, FR-SUI-01.4",apps/api/services/auth; apps/api/internal/config/config.go,2026-11-11
+S2: POS alignment,S2.13,"golang-migrate to embedded goose
+Delta 2.7.2: goose migrations embedded in apps/api/internal/db/migrations (0001..0065) with cmd/migrate; up/down/up verified on throwaway databases 2026-11-08; zap replaced by slog.",POS,Completed,,0204109 294eb42,,FR-POS-SEC.1,apps/api/internal/db/migrations; apps/api/cmd/migrate,2026-11-11
+S2: POS alignment,S2.14,"Admin and cashier merged into one web app
+Delta 2.7.2: apps/admin and apps/cashier still separate (both moved to kit session proxy, tokens bridged to kit variables); no apps/web with (admin)/(cashier) route groups, admin store selector absent.",POS,Not Started,,a60425b 0791631,,"FR-POS-01.3, FR-POS-01.11, FR-POS-04.10",apps/admin; apps/cashier,2026-11-11
+S2: POS alignment,S2.15,"HIGH: sales trusts client price
+Sale lines now priced from product via PriceReader.UnitPrice; discounts validated. Role-based discount authority (D-POS-07) still tbd. Fix not re-run in this tracker [INFERENCE].",POS,Pending Verification,,40a0bcb 040ac58,,"FR-POS-04.4, FR-POS-04.1",apps/api/services/sales/application/commands/create_sale.go,2026-11-11
+S2: POS alignment,S2.16,"HIGH: sales report GROUP BY and range
+GetReport GROUP BY (42803) fixed by merging report queries (05640ae) and range filter made sargable (040ac58, migration 0065).",POS,Pending Verification,,05640ae 040ac58,,"FR-POS-07.1, FR-POS-07.2",apps/api/services/sales/infrastructure/postgres/sale_repository.go,2026-11-11
+S2: POS alignment,S2.17,"HIGH: cashier could mint loyalty points
+Loyalty endpoint restricted to admin and once per sale_id (unique migration 0062, tenant FK 0063).",POS,Completed,,8aacef5,,FR-POS-06.3,"apps/api/services/customer/http.go; migrations 0062, 0063",2026-11-11
+S2: POS alignment,S2.18,"HIGH: negative stock
+Stock can no longer go negative: atomic update plus CHECK constraint (migration 0032).",POS,Completed,,17bb72e,,FR-POS-03.2,apps/api/internal/db/migrations/0032_inventory_quantity_nonnegative.sql,2026-11-11
+S2: POS alignment,S2.19,"HIGH: receive_stock non-atomic
+Receiving a PO adds stock in one transaction, once per order; index migration 0052.",POS,Completed,,d39a914,,FR-POS-05.5,apps/api/services/supplier,2026-11-11
+S2: POS alignment,S2.20,"HIGH: cross-tenant category_id
+Product creation rejects categories of another tenant; composite tenant FK (migration 0022).",POS,Completed,,31465e5,,FR-POS-02.1,apps/api/internal/db/migrations/0022_product_category_tenant_fk.sql,2026-11-11
+S2: POS alignment,S2.21,"HIGH: refresh rotation race and cashier sid
+Replayed refresh rotation rejected, cashier login requires its assigned store id (migrations 0012, 0016). Concurrency behaviour not stress-tested here [INFERENCE].",POS,Pending Verification,,f5f6c16 0ba794d,,"FR-POS-01.4, FR-POS-01.2",apps/api/services/auth,2026-11-11
+S3: HRIS alignment,S3.1,"Gate 1: migrations up->down->up on fresh DB in CI
+Goose migrations (0001-0075) run via kit/migrate with db.Down available; no CI test yet that applies up, down, up on a fresh database (internal/testdb only checks independent migrated DBs; CI runs scripts/check.sh).",HRS,In Progress,,,,FR-HRS-SEC.2,HRIS-Stery/apps/api/internal/db/migrate.go; HRIS-Stery/apps/api/internal/testdb/testdb_test.go; HRIS-Stery/.github/workflows/ci.yml; missing: up-down-up test [INFERENCE: not found by grep for Down in tests],2026-11-09
+S3: HRIS alignment,S3.2,"Gate 2: real login through the API
+Web login action posts to /api/v1/auth/login with tenant_slug and stores a session via the stery-kit session proxy; mock login removed. No browser e2e of full login flow verified here.",HRS,Pending Verification,,,,"FR-HRS-01.2, FR-HRS-01.3",HRIS-Stery/apps/web/src/routes/(auth)/login/+page.server.ts; HRIS-Stery/apps/api/services/auth/http.go; commit 53f9436 d399fe8,2026-11-09
+S3: HRIS alignment,S3.3,"Gate 3: employee update and org chart
+No PATCH/PUT employee route and no org-chart route exist in apps/api (route table: GET/POST employees, terminate only).",HRS,Not Started,,,,"FR-HRS-02.3, FR-HRS-02.7",HRIS-Stery/apps/api/services/employee/http.go (routes absent),2026-11-09
+S3: HRIS alignment,S3.4,"Gate 4: document presign and rollback with tests
+Routes POST /documents/{file_id}/presigned-url and /rollback exist with command handlers; upload_document_test and http_test cover presign upload and rollback handler stub. End-to-end rollback test against Postgres/RustFS not verified.",HRS,Pending Verification,,,,"FR-HRS-07.1, FR-HRS-07.3, FR-HRS-07.6",HRIS-Stery/apps/api/services/document/http.go; .../application/commands/rollback_document_version.go; .../http_test.go; .../upload_document_test.go,2026-11-09
+S3: HRIS alignment,S3.5,"Gate 5: NIK/NPWP/birth_date encrypted with kit/piicrypt
+stery-kit/go has no piicrypt package and HRIS has no encryption code; employee migration 0021 keeps plain columns.",HRS,Not Started,,,,"FR-HRS-02.8, FR-HRS-SEC.3",HRIS-Stery/apps/api/internal/db/migrations/0021_employee_schema.sql; stery-kit/go (piicrypt absent),2026-11-09
+S3: HRIS alignment,S3.6,"Gate 6: rate limits enforced
+stery-kit/go/ratelimit (Redis fixed window) exists but is not referenced anywhere in HRIS apps/api; login lockout/login_attempts unused in Go.",HRS,Not Started,,,,"FR-HRS-SEC.6, FR-HRS-01.5",stery-kit/go/ratelimit/ratelimit.go; HRIS-Stery/apps/api/cmd/api/routes.go (not wired),2026-11-09
+S3: HRIS alignment,S3.7,"Gate 7: secrets and binaries removed
+Legacy services, Laravel gateway and per-service server.exe removed from tree (no *.exe found, *.exe ignored); no .env tracked; compose requires REDIS_PASSWORD/S3 secrets; init-postgres takes HRIS_APP_PASSWORD from env. Purge of secrets from git history not verified.",HRS,Pending Verification,,,,FR-HRS-SEC.7,HRIS-Stery/.gitignore; HRIS-Stery/deploy/docker/init-postgres.sh; HRIS-Stery/deploy/docker-compose.yml; commits 9aa3059 514acdd 7cf292f,2026-11-09
+S3: HRIS alignment,S3.8,"One Go module, REST /api/v1
+Seven gRPC services collapsed into single module apps/api on stery-kit with net/http mux under /api/v1 (auth, employee, attendance, leave, notification, audit, document).",HRS,Completed,,d399fe8,,"FR-HRS-01.2, FR-HRS-SEC.5",HRIS-Stery/apps/api; docs/adr/0005-single-module-go-api-on-sela-stack.md,2026-11-08
+S3: HRIS alignment,S3.9,"Remove Laravel gateway and legacy services
+Laravel api-gateway, legacy microservices and proto removed.",HRS,Completed,,9aa3059,,FR-HRS-01.2,"commit 9aa3059 (apps/api-gateway, services/, proto/ deleted)",2026-11-08
+S3: HRIS alignment,S3.10,"Migrations fixed and moved to goose
+Attendance partial unique index replaces invalid constraint; RLS policies with WITH CHECK; goose via kit/migrate; app grants narrowed (0072); audit RLS (0062); uuidv7 defaults (0074); indexes (0075).",HRS,Completed,,d399fe8 7cf292f 97f1ee5,,"FR-HRS-SEC.1, FR-HRS-03.1",HRIS-Stery/apps/api/internal/db/migrations/0031_attendance_schema.sql; 0072_narrow_app_grants.sql; 0074_uuidv7_defaults.sql,2026-11-09
+S3: HRIS alignment,S3.11,"Opaque session, pgx, RustFS-compatible objstore, static SPA
+Opaque session via kit/authn and pgx 5.11 and kit/objstore are in place; web still uses adapter-auto with SSR session proxy, not the adapter-static SPA required by the delta table.",HRS,In Progress,,,,"FR-HRS-SEC.4, FR-HRS-07.1",HRIS-Stery/apps/web/svelte.config.js (adapter-auto); HRIS-Stery/apps/api/go.mod; HRIS-Stery/apps/web/src/routes/api/[...path],2026-11-09
+S3: HRIS alignment,S3.12,"Defer payroll, tax, recruitment, performance (ADR-0004)
+Deferred to Phase 2 by ADR-0004; no payroll/tax/recruitment/performance code in apps/api.",HRS,Completed,,n/a (deferral decision; no code),,FR-HRS-08.1,HRIS-Stery/docs/adr/0004-defer-payroll-to-phase2.md,2026-05-30
+S3: HRIS alignment,S3.13,"Fix refresh-token rotation race
+Refresh tokens consumed atomically and user reloaded on refresh.",HRS,Completed,,6211a02,,FR-HRS-01.4,HRIS-Stery/apps/api/services/auth/infrastructure,2026-11-09
+S3: HRIS alignment,S3.14,"Fix document authorization
+Document access restricted to owner and HR admin; deleted files hidden.",HRS,Completed,,f69c106 8828366,,"FR-HRS-07.3, FR-HRS-07.4, FR-HRS-07.7",HRIS-Stery/apps/api/services/document/domain/access.go,2026-11-09
+S3: HRIS alignment,S3.15,"SMTP StartTLS and email delivery
+The unwired email adapter was deleted (3e02114); no SMTP sending code exists, so StartTLS enforcement is moot until delivery is rebuilt.",HRS,Not Started,,,,"FR-HRS-05.2, FR-HRS-05.5",HRIS-Stery/apps/api/services/notification (no smtp code),2026-11-09
+S3: HRIS alignment,S3.16,"Fix notification channel config wipe
+Updating one channel keeps the other channels.",HRS,Completed,,bb6d596,,FR-HRS-05.5,HRIS-Stery/apps/api/services/notification,2026-11-09
+S3: HRIS alignment,S3.17,"Fix leave lost update, self-approval, overlap
+Atomic balance, status guard, overlap and self-approval checks.",HRS,Completed,,5335a8a a3c5703,,"FR-HRS-04.3, FR-HRS-04.4, FR-HRS-04.5",HRIS-Stery/apps/api/services/leave,2026-11-09
+S3: HRIS alignment,S3.18,"Audit table RLS
+RLS enforced with default partition on audit entries.",HRS,Completed,,ae1fb5f df6eb31,,FR-HRS-06.7,HRIS-Stery/apps/api/internal/db/migrations/0062_audit_rls_default_partition.sql,2026-11-09
+S3: HRIS alignment,S3.19,"Remove hardcoded password from init-postgres
+App role password from HRIS_APP_PASSWORD env; compose runs API as hris_app.",HRS,Completed,,514acdd,,FR-HRS-SEC.7,HRIS-Stery/deploy/docker/init-postgres.sh; init-postgres.sql,2026-11-09
+S4: Suite-mode adapters + billing + console,S4.1,"SELA suite-mode adapters and hosts link columns
+Six ports with suite adapters, STERY_MODE, nullable hosts.org_id and hosts.external_subject for SELA.",SEL,Not Started,,,,"FR-SUI-08.1, FR-SUI-08.2, FR-SUI-08.3, FR-SUI-07.7, FR-SUI-02.11",SELA/apps/api (not started),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.2,"POS suite-mode adapters and tenants.org_id link
+Suite adapters for Identity, Tenant, Entitlement, Notification, Audit, Events in POS; requires the POS S2 gate closed.",POS,Not Started,,,,"FR-SUI-08.1, FR-SUI-08.3, FR-SUI-02.6, FR-SUI-02.9",POS-Stery/apps/api (not started),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.3,"HRIS suite-mode adapters and tenants.org_id link
+Suite adapters in HRIS; requires the HRIS S3 gate closed.",HRS,Not Started,,,,"FR-SUI-08.1, FR-SUI-08.3, FR-SUI-02.6, FR-SUI-02.9",HRIS-Stery/apps/api (not started),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.4,"Platform BIL: billing, checkout, webhook, activation
+Billing module reusing the SELA payment.Provider abstraction.",SUI,Not Started,,,,"FR-SUI-03.1, FR-SUI-03.2, FR-SUI-03.3, FR-SUI-03.4, FR-SUI-03.5, FR-SUI-03.8, FR-SUI-03.10, FR-SUI-03.12",platform billing (not created),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.5,"Platform NTF: notification hub
+Notification outbox, worker, bilingual platform emails.",SUI,Not Started,,,,"FR-SUI-04.1, FR-SUI-04.2, FR-SUI-04.3, FR-SUI-04.4",platform notifications (not created),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.6,"Platform AUD: audit sink and reader
+Append-only audit_logs, AuditService/Record, reader API.",SUI,Not Started,,,,"FR-SUI-05.1, FR-SUI-05.2, FR-SUI-05.3, FR-SUI-05.5",platform audit (not created),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.7,"Platform ADM: admin console
+SvelteKit console: sign-in, org wizard, members, entitlements, billing, audit, operator section.",SUI,Not Started,,,,"FR-SUI-06.1, FR-SUI-06.2, FR-SUI-06.3, FR-SUI-06.4, FR-SUI-06.5, FR-SUI-06.6, FR-SUI-06.7",stery-suite/apps/web (not created),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.8,"Platform INT: integration links and delivery
+integration_links, link finalisation, user mapping, Publish/Deliver, retry and dead-letter.",SUI,Not Started,,,,"FR-SUI-07.1, FR-SUI-07.2, FR-SUI-07.3, FR-SUI-07.4, FR-SUI-07.5, FR-SUI-07.8, FR-SUI-07.9, FR-SUI-07.10, FR-SUI-07.11",platform integration (not created),2026-11-11
+S4: Suite-mode adapters + billing + console,S4.9,"Suite deployment profile and conformance
+Compose suite profile, one Postgres with four databases, pinned images, Caddy routes, conformance.sh.",SUI,Not Started,,,,"FR-SUI-08.7, FR-SUI-08.9, FR-SUI-08.10, FR-SUI-08.11, FR-SUI-08.12, FR-SUI-08.13",deploy/docker-compose.yml suite profile (not created),2026-11-11
+S5: Cross-product integrations + new-product onboarding,S5.1,"INT-1 HRS to POS staff link
+Hypothesis; validate demand first (OQ-9).",SUI,Not Started,,,,FR-SUI-07.13,,2026-11-11
+S5: Cross-product integrations + new-product onboarding,S5.2,"INT-2 HRS gathering creates a SELA event
+Hypothesis; validate demand first (OQ-9).",SUI,Not Started,,,,FR-SUI-07.14,,2026-11-11
+S5: Cross-product integrations + new-product onboarding,S5.3,"INT-3 POS store event creates a SELA event
+Hypothesis; validate demand first (OQ-9).",SUI,Not Started,,,,FR-SUI-07.15,,2026-11-11
+S5: Cross-product integrations + new-product onboarding,S5.4,"Product Contract trial with one new product
+Onboard a trial product via manifest, ports and BRD/PRD/FSD triple.",SUI,Not Started,,,,"FR-SUI-08.4, FR-SUI-08.8, FR-SUI-08.16",,2026-11-11
