@@ -7,7 +7,7 @@ Cara membaca: ikuti bagian dari atas ke bawah pada pemakaian pertama; setelah it
 ## Prasyarat
 
 | # | Pemeriksaan | Perintah (dari root suite `C:/Users/solui/moon-eye/stery-suite`) | Hasil yang diharapkan |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Ekstensi engine ada | `ls ~/.omp/agent/extensions/aidlc-workflow.ts` | berkas ada |
 | 2 | Working tree bersih per repo | `git -C SELA status --short`, sama untuk `POS-Stery`, `HRIS-Stery`, `stery-kit` | kosong; commit atau stash dulu perubahan design-system yang belum di-commit (jumlahnya ada di dokumen Progress, bagian Summary) |
 | 3 | Gerbang kualitas hijau per repo produk | `bash scripts/check.sh` di dalam `SELA/`, `POS-Stery/`, `HRIS-Stery/` | exit 0; butuh `TEST_DATABASE_URL` dan `TEST_REDIS_ADDR` |
@@ -26,7 +26,7 @@ Fakta engine (sumber: `~/.omp/agent/extensions/aidlc-engine/README.md`):
 Dua tingkat. Jangan dicampur dalam satu sesi.
 
 | Tingkat | Jalankan `omp` di | Dipakai untuk | Folder state |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Suite | root suite | intent lintas repo: pekerjaan platform, milestone S4-S5, requirement FR-SUI | `.aidlc/` (sudah ada; id `aidlc-20261114051752-6a2ffc`, scope `classic`, 3 stage disetujui, 15 pending) |
 | Produk | `SELA/`, `POS-Stery/` atau `HRIS-Stery/` | FR dan Bolt per produk | `<repo>/.aidlc/`, dibuat oleh `/aidlc start` pertama di folder itu |
 
@@ -53,7 +53,7 @@ Hanya manusia yang dapat menjalankan `/aidlc approve`; model tidak bisa. Persetu
 Diambil dari peta stage di dokumen Progress.
 
 | Target | Mulai run dari | Lalu |
-|---|---|---|
+| --- | --- | --- |
 | SELA | Tutup gerbang tinjauan manusia inception (intent `261014-closed-beta-readiness`, gerbang Open); catat keputusan di rekaman requirements-analysis milik engine | Verifikasi B1-B2 (sudah dibangun, belum diverifikasi), lalu B7: uji perangkat nyata, bukti webhook Midtrans, T7.2 butuh minimal 3 baris di `SELA/docs/tracking/usability_sessions.csv` |
 | POS-Stery | build-and-test: verifikasi ulang B6 secara lokal dan jalankan ulang `bash scripts/check.sh` | Kerjakan 18 temuan High yang masih terbuka di `code-review-2026-11-08.md`; lalu isi celah user-stories dan domain-design; lalu contract-design (OpenAPI) |
 | HRIS-Stery | build-and-test: verifikasi ulang B6 secara lokal dan jalankan ulang `bash scripts/check.sh` | Kerjakan temuan High yang terbuka dan cacat yang dikutip FSD; lalu celah user-stories; lalu contract-design (tabel RPC ada di FSD, proto dihapus) |
@@ -65,7 +65,7 @@ Diambil dari peta stage di dokumen Progress.
 Default yang diusulkan lebih dulu. Ganti dengan menjawab berbeda pada gerbang.
 
 | Gerbang | Muncul di | Jawaban default | Alasan |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | C1 Persetujuan stage | Setiap akhir stage, `/aidlc approve` | Setujui hanya bila artefak mencantumkan jalur bukti; selain itu `/aidlc reject` | Kualitas artefak hanya diperiksa secara struktural, bukan semantik |
 | C2 Pakai ulang atau pindai ulang Code KB | reverse-engineering, per repo | `Focused scan` untuk POS-Stery, HRIS-Stery, SELA; `Full rescan` untuk stery-kit | Peta scout intent ada untuk tiga produk tetapi belum ada Code KB; kit tidak punya peta |
 | C3 Perintah verifikasi per Unit | build-and-test dan tiap Bolt | SELA, POS-Stery, HRIS-Stery: `bash scripts/check.sh` (butuh `TEST_DATABASE_URL`, `TEST_REDIS_ADDR`; persempit dengan `CHECK_STAGES=go` atau `CHECK_STAGES=web`). stery-kit: `cd go && go build ./... && go vet ./... && go test ./... && cd ../web && npm run check && npm run test:unit`. Root suite: `python scripts/build_tracker.py --check` | Gerbang yang sama dengan yang sudah dipakai CI repo |
@@ -79,7 +79,7 @@ Default yang diusulkan lebih dulu. Ganti dengan menjawab berbeda pada gerbang.
 ## Pemecahan masalah
 
 | Gejala | Tindakan |
-|---|---|
+| --- | --- |
 | Stage macet `interrupted` | `/aidlc resume` (atau `/aidlc next`) menjalankannya ulang |
 | Artefak ditolak karena ukuran, tanpa heading `##`, atau ada placeholder | Perbaiki berkas rekaman di `.aidlc/records/`, lalu jalankan ulang stage |
 | `STALE_ARTIFACTS` saat approve | Artefak yang digerbang berubah setelah attestation; jalankan ulang stage untuk attest ulang, lalu setujui |

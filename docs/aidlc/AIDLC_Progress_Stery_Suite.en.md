@@ -9,7 +9,7 @@ How to read: the Summary gives one row per repo; the Stage map shows, per repo, 
 All four product modules are on `go 1.27.3` and all four repos are on branch `chore/go-1.27-pg-18.6`. "Uncommitted" counts `git status --short` lines; the figure after the plus sign is this documentation task's own edits (section Doc drift fixed on 2026-11-14).
 
 | Repo | Branch | Last commit | Uncommitted files | Intent and phase | Requirement counts | Tracker counts | Top blocker |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | SELA | `chore/go-1.27-pg-18.6` | 2026-11-09 | 14 (11 + 3) | `261014-closed-beta-readiness`: Inception, human review gate Open; B0 done, B1-B2 built but unverified, B3-B5 merged (PRs #8-#10), B6 moved to B7, B7 not started, Operation not started | 66 FSD requirements: 45 Completed / 21 Partial | 105 tasks (as_of 2026-10-25): 76 Completed / 20 Pending Verification / 9 Not Started | Inception review gate Open; B7 real-device and Midtrans webhook proof pending |
 | POS-Stery | `chore/go-1.27-pg-18.6` | 2026-11-09 | 23 (20 + 3) | `261108-stack-align-sela`: Construction; B1-B5 done, B6 build/test done locally, U8 CI written | 68 FSD rows: 11 Done / 32 Partial / 1 Pending Verification / 24 Not started | 22 suite-tracker tasks: 7 Completed / 3 In Progress / 5 Pending Verification / 7 Not Started | 18 open High review findings repo-wide (verdict BLOCK); the `unit_price` finding looks resolved in current code (blocker a), re-verify the rest |
 | HRIS-Stery | `chore/go-1.27-pg-18.6` | 2026-11-09 | 15 (9 + 6) | `261108-stack-align-sela`: Construction; B1-B5 done, B6 build/test done locally, U8 CI written | 75 FSD rows: 1 Done / 40 Partial / 1 Pending Verification / 33 Not started | 20 suite-tracker tasks: 10 Completed / 2 In Progress / 3 Pending Verification / 5 Not Started | Same 18 High findings (HRIS: non-atomic refresh rotation, document access, leave); FSD defects not re-verified |
@@ -23,7 +23,7 @@ Stage order follows the engine (`.aidlc/state.json`, `order`) without the three 
 ### SELA
 
 | Stage | Status | Evidence path |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/01-context.md` |
 | reverse-engineering | Missing | - |
 | requirements-analysis | Done | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/03-requirements.md` |
@@ -43,7 +43,7 @@ Stage order follows the engine (`.aidlc/state.json`, `order`) without the three 
 ### POS-Stery
 
 | Stage | Status | Evidence path |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `POS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md` |
 | reverse-engineering | Done | `POS-Stery/docs/aidlc/intents/261108-stack-align-sela/aidlc-state.md` (intent scout maps; no Code KB) |
 | requirements-analysis | Done | `POS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md`, `POS-Stery/PRD.md`, `POS-Stery/docs/BRD_POS.en.md`, `POS-Stery/docs/FSD_POS.en.md` |
@@ -63,7 +63,7 @@ Stage order follows the engine (`.aidlc/state.json`, `order`) without the three 
 ### HRIS-Stery
 
 | Stage | Status | Evidence path |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `HRIS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md` |
 | reverse-engineering | Done | `HRIS-Stery/docs/aidlc/intents/261108-stack-align-sela/aidlc-state.md` (intent scout maps; no Code KB) |
 | requirements-analysis | Done | `HRIS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md`, `HRIS-Stery/docs/BRD_HRIS.en.md`, `HRIS-Stery/docs/PRD_HRIS.en.md`, `HRIS-Stery/docs/FSD_HRIS.en.md` |
@@ -85,7 +85,7 @@ Stage order follows the engine (`.aidlc/state.json`, `order`) without the three 
 No intent and no `docs/aidlc`. Requirements and design evidence is limited to the tracker task S1.1 (`docs/tracking/tracker.json`), `stery-kit/DESIGN.md` and `stery-kit/PRODUCT.md`.
 
 | Stage | Status | Evidence path |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Missing | - |
 | reverse-engineering | Missing | - |
 | requirements-analysis | Partial | `docs/tracking/tracker.json` (KIT task S1.1), `stery-kit/PRODUCT.md` |
@@ -105,7 +105,7 @@ No intent and no `docs/aidlc`. Requirements and design evidence is limited to th
 ### Suite
 
 | Stage | Status | Evidence path |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `.aidlc/state.json` |
 | reverse-engineering | Missing | - |
 | requirements-analysis | Done | `docs/BRD_Stery_Suite.en.md`, `docs/PRD_Stery_Suite.en.md`, `docs/FSD_Stery_Suite.en.md` |
@@ -129,7 +129,7 @@ Recomputed on 2026-11-14. FSD tallies count the first Status cell of each unique
 ### FSD requirement rows
 
 | FSD | Rows | Done | Partial | Pending Verification | Not started | Deferred |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | Suite (`docs/FSD_Stery_Suite.en.md`, FR-SUI) | 102 | 0 | 5 | 0 | 97 | 0 |
 | POS (`POS-Stery/docs/FSD_POS.en.md`) | 68 | 11 | 32 | 1 | 24 | 0 |
 | HRIS (`HRIS-Stery/docs/FSD_HRIS.en.md`) | 75 | 1 | 40 | 1 | 33 | 0 |
@@ -139,7 +139,7 @@ POS moved from 30 Partial / 26 Not started to 32 / 24 on 2026-11-14: FR-POS-04.4
 ### Suite tracker tasks per milestone (`docs/tracking/tracker.json`, 64 tasks)
 
 | Milestone | Tasks | Completed | In Progress | Pending Verification | Not Started |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | S0 | 6 | 1 | 2 | 3 | 0 |
 | S1 | 5 | 1 | 0 | 1 | 3 |
 | S2 | 21 | 7 | 3 | 5 | 6 |
@@ -157,7 +157,7 @@ POS moved from 30 Partial / 26 Not started to 32 / 24 on 2026-11-14: FR-POS-04.4
 ## Open blockers
 
 | # | Blocker | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | a | Local code review verdict is BLOCK with 18 High findings open. Examples: HRIS refresh rotation is a non-atomic `Exists` then `Del`; POS sale trusts client `unit_price` and discounts; POS stock can go negative; POS supplier `receive_stock` double counts; POS customer loyalty points can be minted by a cashier; POS `category_id` can point to another tenant. Note: the POS FSD (as updated 2026-11-14) records server-side unit price as present in `POS-Stery/apps/api/services/sales/infrastructure/price_port.go`, so re-verify that finding first | `code-review-2026-11-08.md` |
 | b | SELA inception human review gate is still Open; real-device and Midtrans webhook tests are pending (B7); T7.2 needs at least 3 rows in `SELA/docs/tracking/usability_sessions.csv` | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/aidlc-state.md`, `SELA/docs/tracking/usability_sessions.csv` |
 | c | POS secrets (FR-POS-SEC.6, Partial): `POS-Stery/ecosystem.config.cjs` now reads secrets from `.env`; the old `deploy/docker/init-postgres.sql` and `scripts/migrate-helper.sh` no longer exist. Still open: git history was not rewritten and rotation of the old values is not evidenced (tracker task S2.5, In Progress) | `POS-Stery/ecosystem.config.cjs`, `docs/tracking/tracker.json` |
@@ -169,7 +169,7 @@ POS moved from 30 Partial / 26 Not started to 32 / 24 on 2026-11-14: FR-POS-04.4
 ## Doc drift fixed on 2026-11-14
 
 | File | Change |
-|---|---|
+| --- | --- |
 | `POS-Stery/CLAUDE.md` | `Go 1.25.1` to `Go 1.27.3` |
 | `POS-Stery/docs/FSD_POS.en.md`, `POS-Stery/docs/FSD_POS.id.md` | Status note under the title; about 180 as-is evidence paths and the as-is prose for gRPC, NATS, gateway, client-trusted price and PO receive rewritten to the current single-module code (`apps/api/services/<x>/`, `cmd/api/{main,routes}.go`, `stery-kit/go/*`); removed components point to ADR-0001/0002; target-state text untouched; FR-POS-04.4 and FR-POS-SEC.6 set to Partial (server-side unit price and negative-total rejection exist; no role-limited discount, D-POS-07 still `tbd`); EN and ID parity (12 `##` headings, 486 table rows each) |
 | `HRIS-Stery/CLAUDE.md` | `Go 1.25.1` to `Go 1.27.3` |

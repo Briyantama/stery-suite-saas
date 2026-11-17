@@ -9,7 +9,7 @@ Cara membaca: Summary memberi satu baris per repo; Stage map menunjukkan, per re
 Keempat modul produk memakai `go 1.27.3` dan keempat repo berada di branch `chore/go-1.27-pg-18.6`. "Uncommitted" menghitung baris `git status --short`; angka setelah tanda tambah adalah suntingan dari tugas dokumentasi ini sendiri (bagian Doc drift fixed on 2026-11-14).
 
 | Repo | Branch | Commit terakhir | Berkas uncommitted | Intent dan fase | Hitungan requirement | Hitungan tracker | Blocker utama |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | SELA | `chore/go-1.27-pg-18.6` | 2026-11-09 | 14 (11 + 3) | `261014-closed-beta-readiness`: Inception, human review gate Open; B0 selesai, B1-B2 sudah dibangun tetapi belum diverifikasi, B3-B5 sudah di-merge (PR #8-#10), B6 dipindah ke B7, B7 belum dimulai, Operation belum dimulai | 66 requirement FSD: 45 Completed / 21 Partial | 105 task (as_of 2026-10-25): 76 Completed / 20 Pending Verification / 9 Not Started | Inception review gate Open; bukti perangkat nyata dan webhook Midtrans untuk B7 masih tertunda |
 | POS-Stery | `chore/go-1.27-pg-18.6` | 2026-11-09 | 23 (20 + 3) | `261108-stack-align-sela`: Construction; B1-B5 selesai, build/test B6 selesai secara lokal, CI U8 sudah ditulis | 68 baris FSD: 11 Done / 32 Partial / 1 Pending Verification / 24 Not started | 22 task suite-tracker: 7 Completed / 3 In Progress / 5 Pending Verification / 7 Not Started | 18 temuan review High terbuka di seluruh repo (verdict BLOCK); temuan `unit_price` tampak sudah teratasi di kode saat ini (blocker a), verifikasi ulang sisanya |
 | HRIS-Stery | `chore/go-1.27-pg-18.6` | 2026-11-09 | 15 (9 + 6) | `261108-stack-align-sela`: Construction; B1-B5 selesai, build/test B6 selesai secara lokal, CI U8 sudah ditulis | 75 baris FSD: 1 Done / 40 Partial / 1 Pending Verification / 33 Not started | 20 task suite-tracker: 10 Completed / 2 In Progress / 3 Pending Verification / 5 Not Started | 18 temuan High yang sama (HRIS: rotasi refresh tidak atomik, akses dokumen, cuti); cacat FSD belum diverifikasi ulang |
@@ -23,7 +23,7 @@ Urutan stage mengikuti engine (`.aidlc/state.json`, `order`) tanpa tiga stage in
 ### SELA
 
 | Stage | Status | Path bukti |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/01-context.md` |
 | reverse-engineering | Missing | - |
 | requirements-analysis | Done | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/03-requirements.md` |
@@ -43,7 +43,7 @@ Urutan stage mengikuti engine (`.aidlc/state.json`, `order`) tanpa tiga stage in
 ### POS-Stery
 
 | Stage | Status | Path bukti |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `POS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md` |
 | reverse-engineering | Done | `POS-Stery/docs/aidlc/intents/261108-stack-align-sela/aidlc-state.md` (peta scout intent; tanpa Code KB) |
 | requirements-analysis | Done | `POS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md`, `POS-Stery/PRD.md`, `POS-Stery/docs/BRD_POS.en.md`, `POS-Stery/docs/FSD_POS.en.md` |
@@ -63,7 +63,7 @@ Urutan stage mengikuti engine (`.aidlc/state.json`, `order`) tanpa tiga stage in
 ### HRIS-Stery
 
 | Stage | Status | Path bukti |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `HRIS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md` |
 | reverse-engineering | Done | `HRIS-Stery/docs/aidlc/intents/261108-stack-align-sela/aidlc-state.md` (peta scout intent; tanpa Code KB) |
 | requirements-analysis | Done | `HRIS-Stery/docs/aidlc/intents/261108-stack-align-sela/01-context.md`, `HRIS-Stery/docs/BRD_HRIS.en.md`, `HRIS-Stery/docs/PRD_HRIS.en.md`, `HRIS-Stery/docs/FSD_HRIS.en.md` |
@@ -85,7 +85,7 @@ Urutan stage mengikuti engine (`.aidlc/state.json`, `order`) tanpa tiga stage in
 Tanpa intent dan tanpa `docs/aidlc`. Bukti requirement dan desain terbatas pada task tracker S1.1 (`docs/tracking/tracker.json`), `stery-kit/DESIGN.md` dan `stery-kit/PRODUCT.md`.
 
 | Stage | Status | Path bukti |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Missing | - |
 | reverse-engineering | Missing | - |
 | requirements-analysis | Partial | `docs/tracking/tracker.json` (task KIT S1.1), `stery-kit/PRODUCT.md` |
@@ -105,7 +105,7 @@ Tanpa intent dan tanpa `docs/aidlc`. Bukti requirement dan desain terbatas pada 
 ### Suite
 
 | Stage | Status | Path bukti |
-|---|---|---|
+| --- | --- | --- |
 | workspace-detection | Done | `.aidlc/state.json` |
 | reverse-engineering | Missing | - |
 | requirements-analysis | Done | `docs/BRD_Stery_Suite.en.md`, `docs/PRD_Stery_Suite.en.md`, `docs/FSD_Stery_Suite.en.md` |
@@ -129,7 +129,7 @@ Dihitung ulang pada 2026-11-14. Rekap FSD menghitung sel Status pertama dari set
 ### FSD requirement rows
 
 | FSD | Baris | Done | Partial | Pending Verification | Not started | Deferred |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | Suite (`docs/FSD_Stery_Suite.en.md`, FR-SUI) | 102 | 0 | 5 | 0 | 97 | 0 |
 | POS (`POS-Stery/docs/FSD_POS.en.md`) | 68 | 11 | 32 | 1 | 24 | 0 |
 | HRIS (`HRIS-Stery/docs/FSD_HRIS.en.md`) | 75 | 1 | 40 | 1 | 33 | 0 |
@@ -139,7 +139,7 @@ POS bergeser dari 30 Partial / 26 Not started menjadi 32 / 24 pada 2026-11-14: F
 ### Suite tracker tasks per milestone (`docs/tracking/tracker.json`, 64 tasks)
 
 | Milestone | Task | Completed | In Progress | Pending Verification | Not Started |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | S0 | 6 | 1 | 2 | 3 | 0 |
 | S1 | 5 | 1 | 0 | 1 | 3 |
 | S2 | 21 | 7 | 3 | 5 | 6 |
@@ -157,7 +157,7 @@ POS bergeser dari 30 Partial / 26 Not started menjadi 32 / 24 pada 2026-11-14: F
 ## Open blockers
 
 | # | Blocker | Bukti |
-|---|---|---|
+| --- | --- | --- |
 | a | Verdict code review lokal adalah BLOCK dengan 18 temuan High terbuka. Contoh: rotasi refresh HRIS berupa `Exists` lalu `Del` yang tidak atomik; penjualan POS memercayai `unit_price` dan diskon dari klien; stok POS bisa menjadi negatif; `receive_stock` supplier POS terhitung ganda; poin loyalitas pelanggan POS bisa dicetak oleh kasir; `category_id` POS bisa menunjuk tenant lain. Catatan: FSD POS (yang diperbarui 2026-11-14) mencatat harga satuan sisi server sudah ada di `POS-Stery/apps/api/services/sales/infrastructure/price_port.go`, jadi verifikasi ulang temuan itu lebih dulu | `code-review-2026-11-08.md` |
 | b | Inception human review gate SELA masih Open; uji perangkat nyata dan webhook Midtrans tertunda (B7); T7.2 butuh minimal 3 baris di `SELA/docs/tracking/usability_sessions.csv` | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/aidlc-state.md`, `SELA/docs/tracking/usability_sessions.csv` |
 | c | Secret POS (FR-POS-SEC.6, Partial): `POS-Stery/ecosystem.config.cjs` kini membaca secret dari `.env`; `deploy/docker/init-postgres.sql` lama dan `scripts/migrate-helper.sh` sudah tidak ada. Masih terbuka: riwayat git belum ditulis ulang dan rotasi nilai lama belum terbukti (task tracker S2.5, In Progress) | `POS-Stery/ecosystem.config.cjs`, `docs/tracking/tracker.json` |
@@ -169,7 +169,7 @@ POS bergeser dari 30 Partial / 26 Not started menjadi 32 / 24 pada 2026-11-14: F
 ## Doc drift fixed on 2026-11-14
 
 | Berkas | Perubahan |
-|---|---|
+| --- | --- |
 | `POS-Stery/CLAUDE.md` | `Go 1.25.1` menjadi `Go 1.27.3` |
 | `POS-Stery/docs/FSD_POS.en.md`, `POS-Stery/docs/FSD_POS.id.md` | Catatan status di bawah judul; sekitar 180 path bukti as-is dan prosa as-is untuk gRPC, NATS, gateway, harga yang dipercaya dari klien dan penerimaan PO ditulis ulang sesuai kode single-module saat ini (`apps/api/services/<x>/`, `cmd/api/{main,routes}.go`, `stery-kit/go/*`); komponen yang dihapus merujuk ke ADR-0001/0002; teks target-state tidak disentuh; FR-POS-04.4 dan FR-POS-SEC.6 ditetapkan Partial (harga satuan sisi server dan penolakan total negatif ada; tidak ada diskon terbatas per peran, D-POS-07 masih `tbd`); paritas EN dan ID (12 heading `##`, masing-masing 486 baris tabel) |
 | `HRIS-Stery/CLAUDE.md` | `Go 1.25.1` menjadi `Go 1.27.3` |

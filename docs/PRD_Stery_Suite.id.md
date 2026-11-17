@@ -32,7 +32,7 @@ Dokumen ini adalah turunan BRD_Stery_Suite; keputusan arsitektur dirujuk sebagai
 ### 2.2 Persona Pengguna
 
 | **Persona** | **Deskripsi** | **Kebutuhan Utama** | **Sensitivitas Harga** |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Pemilik organisasi (org owner) | Pemilik usaha/organisasi yang membeli paket dan bertanggung jawab atas tagihan | Satu organisasi, memilih paket, membayar lewat QRIS, menambah produk, melihat tagihan dan entitlement | `tbd` |
 | Admin organisasi (org admin) | Mengelola anggota dan akses produk di dalam organisasi | Mengundang anggota, menetapkan akses per produk, memahami status langganan | `tbd` |
 | Pengguna produk (product user) | Karyawan, kasir, atau host acara yang memakai HRIS, POS, atau SELA | Login sekali, berpindah produk, pengalaman produk tidak berubah | tidak langsung (dibayar organisasi) |
@@ -41,7 +41,7 @@ Dokumen ini adalah turunan BRD_Stery_Suite; keputusan arsitektur dirujuk sebagai
 ## 3. User Stories
 
 | **ID** | **Sebagai...** | **Saya ingin...** | **Agar...** | **Prioritas** |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | US-SUI-01 | Pemilik organisasi | membuat organisasi dan memilih paket (`HRS`, `POS`, `SEL`, bundel dua produk, atau `SUITE`) | langsung dapat memakai produk yang saya beli | M |
 | US-SUI-02 | Pemilik organisasi | membayar langganan lewat QRIS | entitlement aktif otomatis setelah pembayaran lunas | M |
 | US-SUI-03 | Pemilik organisasi | menambah produk ke organisasi yang sudah ada (upsell) | tidak membuat akun atau organisasi baru | M |
@@ -141,7 +141,7 @@ Seluruh alur adalah rancangan target; tidak ada yang sudah berjalan (platform be
 ## 6. Kebutuhan Non-Fungsional
 
 | **ID** | **Kategori** | **Kebutuhan** |
-|---|---|---|
+| --- | --- | --- |
 | NFR-SUI-01 | Performa sesi | Introspeksi sesi memakai cache lokal 30 detik di produk; target latensi p95 `tbd` |
 | NFR-SUI-02 | Ketahanan | Snapshot entitlement bertanda tangan dipakai hingga 24 jam (dapat dikonfigurasi, `tbd`) saat platform mati; gagal tertutup untuk fitur berbayar setelahnya |
 | NFR-SUI-03 | Ketersediaan platform | Target ketersediaan `tbd` (tidak ada SLA di repo) |
@@ -176,7 +176,7 @@ Definisi metrik ada di BRD_Stery_Suite bagian 11; seluruh target `tbd`. Metrik p
 ### 10.1 Standalone vs suite
 
 | Aspek | `STERY_MODE=standalone` (bawaan) | `STERY_MODE=suite` |
-|---|---|---|
+| --- | --- | --- |
 | Identitas | Pengguna dan sesi milik produk (SELA: OTP + cookie `sela_session`; HRS/POS: kata sandi + sesi opaque) | Platform menerbitkan `stery_session`; produk memanggil `SessionService/Introspect` |
 | Entitlement | Paket milik produk (SELA: `plans`) | `EntitlementService/Check` + snapshot |
 | Billing | Di luar platform (`tbd`); SELA per-event di SELA | Platform (Midtrans QRIS); SELA per-event tetap di SELA |
@@ -193,7 +193,7 @@ Syarat sebuah produk bergabung ke suite:
 2. **Enam port dengan dua adapter masing-masing**:
 
 | Port | Tanda tangan | Adapter standalone | Adapter suite |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Identity` | `Verify(ctx, token) (Principal, error)` | Sesi/OTP/kata sandi lokal | `SessionService/Introspect` |
 | `Tenant` | `WithTenant(ctx, tenantID, scope, fn)` | Tenant lokal | Organisasi platform -> `kit/tenantdb.WithTenant` |
 | `Entitlement` | `Allows(ctx, org, feature) (bool, error)` | Paket lokal | `EntitlementService/Check` + snapshot |
@@ -201,18 +201,18 @@ Syarat sebuah produk bergabung ke suite:
 | `Audit` | `Record(ctx, event)` | `audit_logs` lokal | Audit sink platform |
 | `Events` | `Publish(ctx, tx, envelope)` | Outbox lokal | `IntegrationService/Publish` |
 
-3. **`STERY_MODE`** dengan nilai `standalone|suite`, bawaan `standalone`.
-4. **`/healthz`** pada API produk.
-5. **Publikasi outbox** transaksional dengan konsumen idempoten.
-6. **Daftar periksa kesesuaian STACK-SPEC** (19 butir): tata letak repo, bahasa Go >= 1.25.1, dekomposisi modul, transport (REST `/api/v1` + gRPC), basis data (PostgreSQL 18, pgx/v5, goose), isolasi tenant, state store (Dragonfly), penyimpanan objek (RustFS, ClamAV), autentikasi (sesi opaque, RBAC), asinkron (ticker + outbox), observabilitas (`slog`, `/healthz`), konfigurasi (env gagal cepat), PII dan audit (`kit/piicrypt`, `kit/audit`), pembayaran (`payment.Provider`), web (SvelteKit SPA), deploy (Caddy, compose), gerbang kualitas (`scripts/check.sh`), proses (TDD, tracker, FSD diperbarui), lokalisasi. Rincian tiap butir di FSD_Stery_Suite 2.1.
-7. **Tripel BRD/PRD/FSD** dalam gaya rumah SELA, termasuk jejak ketertelusuran dan kolom `Bukti`.
+1. **`STERY_MODE`** dengan nilai `standalone|suite`, bawaan `standalone`.
+2. **`/healthz`** pada API produk.
+3. **Publikasi outbox** transaksional dengan konsumen idempoten.
+4. **Daftar periksa kesesuaian STACK-SPEC** (19 butir): tata letak repo, bahasa Go >= 1.25.1, dekomposisi modul, transport (REST `/api/v1` + gRPC), basis data (PostgreSQL 18, pgx/v5, goose), isolasi tenant, state store (Dragonfly), penyimpanan objek (RustFS, ClamAV), autentikasi (sesi opaque, RBAC), asinkron (ticker + outbox), observabilitas (`slog`, `/healthz`), konfigurasi (env gagal cepat), PII dan audit (`kit/piicrypt`, `kit/audit`), pembayaran (`payment.Provider`), web (SvelteKit SPA), deploy (Caddy, compose), gerbang kualitas (`scripts/check.sh`), proses (TDD, tracker, FSD diperbarui), lokalisasi. Rincian tiap butir di FSD_Stery_Suite 2.1.
+5. **Tripel BRD/PRD/FSD** dalam gaya rumah SELA, termasuk jejak ketertelusuran dan kolom `Bukti`.
 
 ## 11. Roadmap Rilis
 
 Estimasi waktu `tbd`.
 
 | **Rilis** | **Fokus** | **Fitur Utama** | **Gerbang keluar** |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | S0 | Dokumen + penutupan closed-beta SELA | Set BRD/PRD/FSD; webhook Midtrans terbukti; keputusan retensi; 20 Pending Verification ditutup atau ditunda; origin media; penegakan `guest_cap`/`video`/`zip_full_resolution` | Gerbang SELA |
 | S1 | `kit` dan platform inti | Ekstraksi `kit`; platform IAM dan ENT | `kit` dipakai SELA tanpa perubahan perilaku |
 | S2 | Penyelarasan POS | Loyalitas dalam proses setelah commit penjualan; paritas REST; CI hijau; RLS `WITH CHECK`; rotasi rahasia; tes Postgres; data dashboard asli; keputusan PPN/struk | Gerbang POS |
@@ -232,7 +232,7 @@ Estimasi waktu `tbd`.
 ## 13. Ketergantungan dan Risiko
 
 | Ketergantungan / risiko | Dampak | Penanganan |
-|---|---|---|
+| --- | --- | --- |
 | RISK-SUI-14 Webhook Midtrans belum terbukti di URL publik | Billing suite tidak dapat dipercaya | Gerbang S0 |
 | RISK-SUI-08 Tim kecil | Alur kerja paralel menumpuk | Satu penyelarasan satu waktu (D-SUI-12) |
 | RISK-SUI-11 Platform titik kegagalan tunggal | Mode suite terdampak | Snapshot, cache 30 detik, standalone tidak bergantung |
@@ -243,7 +243,7 @@ Estimasi waktu `tbd`.
 ## 14. Status Saat Ini
 
 | Area | Status | Keterangan | Bukti |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Platform `stery-suite` | Belum | Repo git dibuat; hanya `docs/`, tanpa kode | `stery-suite/docs` |
 | SELA (produk) | Sebagian | 76/105 task Completed, 20 Pending Verification; identitas hanya OTP lokal; tidak ada tenant, SSO, atau entitlement bundel | `SELA/docs/tracking/tracker.json`, `SELA/apps/api/services/auth/http.go`, `SELA/apps/api/services/payment/postgres.go` |
 | POS (produk) | Sebagian | Enam layanan gRPC nyata; belum ada integrasi lintas layanan loyalitas | `POS-Stery/services/customer-service/internal/application/commands/add_loyalty_points.go` |

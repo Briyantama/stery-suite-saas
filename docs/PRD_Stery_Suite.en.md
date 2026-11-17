@@ -32,7 +32,7 @@ This document is derived from BRD_Stery_Suite; architecture decisions are refere
 ### 2.2 User Personas
 
 | **Persona** | **Description** | **Key Needs** | **Price Sensitivity** |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Organisation owner (org owner) | Owner of the business/organisation who buys the package and is responsible for billing | One organisation, choose a package, pay via QRIS, add products, view invoices and entitlements | `tbd` |
 | Organisation admin (org admin) | Manages members and product access within the organisation | Invite members, set access per product, understand subscription status | `tbd` |
 | Product user | Employee, cashier, or event host using HRIS, POS, or SELA | Log in once, switch products, product experience unchanged | indirect (paid by the organisation) |
@@ -41,7 +41,7 @@ This document is derived from BRD_Stery_Suite; architecture decisions are refere
 ## 3. User Stories
 
 | **ID** | **As a...** | **I want to...** | **So that...** | **Priority** |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | US-SUI-01 | Organisation owner | create an organisation and choose a package (`HRS`, `POS`, `SEL`, two-product bundle, or `SUITE`) | I can use the products I bought right away | M |
 | US-SUI-02 | Organisation owner | pay for a subscription via QRIS | the entitlement is activated automatically once payment is settled | M |
 | US-SUI-03 | Organisation owner | add a product to an existing organisation (upsell) | I do not create a new account or organisation | M |
@@ -141,7 +141,7 @@ All flows are target designs; none is running yet (the platform has no code). Pr
 ## 6. Non-Functional Requirements
 
 | **ID** | **Category** | **Requirement** |
-|---|---|---|
+| --- | --- | --- |
 | NFR-SUI-01 | Session performance | Session introspection uses a 30-second local cache in the product; p95 latency target `tbd` |
 | NFR-SUI-02 | Resilience | The signed entitlement snapshot is used for up to 24 hours (configurable, `tbd`) when the platform is down; fails closed for paid features afterwards |
 | NFR-SUI-03 | Platform availability | Availability target `tbd` (no SLA in the repo) |
@@ -176,7 +176,7 @@ Metric definitions are in BRD_Stery_Suite section 11; all targets `tbd`. Product
 ### 10.1 Standalone vs suite
 
 | Aspect | `STERY_MODE=standalone` (default) | `STERY_MODE=suite` |
-|---|---|---|
+| --- | --- | --- |
 | Identity | Users and sessions owned by the product (SELA: OTP + cookie `sela_session`; HRS/POS: password + opaque session) | The platform issues `stery_session`; the product calls `SessionService/Introspect` |
 | Entitlement | Package owned by the product (SELA: `plans`) | `EntitlementService/Check` + snapshot |
 | Billing | Outside the platform (`tbd`); SELA per-event in SELA | Platform (Midtrans QRIS); SELA per-event stays in SELA |
@@ -193,7 +193,7 @@ Requirements for a product to join the suite:
 2. **Six ports with two adapters each**:
 
 | Port | Signature | Standalone adapter | Suite adapter |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Identity` | `Verify(ctx, token) (Principal, error)` | Local session/OTP/password | `SessionService/Introspect` |
 | `Tenant` | `WithTenant(ctx, tenantID, scope, fn)` | Local tenant | Platform organisation -> `kit/tenantdb.WithTenant` |
 | `Entitlement` | `Allows(ctx, org, feature) (bool, error)` | Local package | `EntitlementService/Check` + snapshot |
@@ -201,18 +201,18 @@ Requirements for a product to join the suite:
 | `Audit` | `Record(ctx, event)` | Local `audit_logs` | Platform audit sink |
 | `Events` | `Publish(ctx, tx, envelope)` | Local outbox | `IntegrationService/Publish` |
 
-3. **`STERY_MODE`** with values `standalone|suite`, default `standalone`.
-4. **`/healthz`** on the product API.
-5. **Transactional outbox publishing** with idempotent consumers.
-6. **STACK-SPEC conformance checklist** (19 items): repo layout, Go language >= 1.25.1, module decomposition, transport (REST `/api/v1` + gRPC), database (PostgreSQL 18, pgx/v5, goose), tenant isolation, state store (Dragonfly), object storage (RustFS, ClamAV), authentication (opaque session, RBAC), async (ticker + outbox), observability (`slog`, `/healthz`), configuration (env fail-fast), PII and audit (`kit/piicrypt`, `kit/audit`), payments (`payment.Provider`), web (SvelteKit SPA), deploy (Caddy, compose), quality gate (`scripts/check.sh`), process (TDD, tracker, FSD updated), localisation. Details of each item in FSD_Stery_Suite 2.1.
-7. **BRD/PRD/FSD triple** in the SELA house style, including the traceability trail and the `Evidence` column.
+1. **`STERY_MODE`** with values `standalone|suite`, default `standalone`.
+2. **`/healthz`** on the product API.
+3. **Transactional outbox publishing** with idempotent consumers.
+4. **STACK-SPEC conformance checklist** (19 items): repo layout, Go language >= 1.25.1, module decomposition, transport (REST `/api/v1` + gRPC), database (PostgreSQL 18, pgx/v5, goose), tenant isolation, state store (Dragonfly), object storage (RustFS, ClamAV), authentication (opaque session, RBAC), async (ticker + outbox), observability (`slog`, `/healthz`), configuration (env fail-fast), PII and audit (`kit/piicrypt`, `kit/audit`), payments (`payment.Provider`), web (SvelteKit SPA), deploy (Caddy, compose), quality gate (`scripts/check.sh`), process (TDD, tracker, FSD updated), localisation. Details of each item in FSD_Stery_Suite 2.1.
+5. **BRD/PRD/FSD triple** in the SELA house style, including the traceability trail and the `Evidence` column.
 
 ## 11. Release Roadmap
 
 Time estimates `tbd`.
 
 | **Release** | **Focus** | **Main Features** | **Exit gate** |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | S0 | Documents + SELA closed-beta exit | BRD/PRD/FSD set; Midtrans webhook proven; retention decision; 20 Pending Verification closed or deferred; media origin; enforcement of `guest_cap`/`video`/`zip_full_resolution` | SELA gate |
 | S1 | `kit` and core platform | `kit` extraction; platform IAM and ENT | `kit` used by SELA with no behaviour change |
 | S2 | POS alignment | In-process loyalty after sale commit; REST parity; CI green; RLS `WITH CHECK`; secret rotation; Postgres tests; real dashboard data; PPN/receipt decision | POS gate |
@@ -232,7 +232,7 @@ Time estimates `tbd`.
 ## 13. Dependencies and Risks
 
 | Dependency / risk | Impact | Handling |
-|---|---|---|
+| --- | --- | --- |
 | RISK-SUI-14 Midtrans webhook not yet proven on a public URL | Suite billing cannot be trusted | S0 gate |
 | RISK-SUI-08 Small team | Parallel workstreams pile up | One alignment at a time (D-SUI-12) |
 | RISK-SUI-11 Platform single point of failure | Suite mode affected | Snapshot, 30-second cache, standalone does not depend on it |
@@ -243,7 +243,7 @@ Time estimates `tbd`.
 ## 14. Current Status
 
 | Area | Status | Notes | Evidence |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `stery-suite` platform | Not started | Git repo created; only `docs/`, no code | `stery-suite/docs` |
 | SELA (product) | Partial | 76/105 tasks Completed, 20 Pending Verification; identity is local OTP only; no tenant, SSO, or bundle entitlement | `SELA/docs/tracking/tracker.json`, `SELA/apps/api/services/auth/http.go`, `SELA/apps/api/services/payment/postgres.go` |
 | POS (product) | Partial | Six real gRPC services; no cross-service loyalty integration yet | `POS-Stery/services/customer-service/internal/application/commands/add_loyalty_points.go` |

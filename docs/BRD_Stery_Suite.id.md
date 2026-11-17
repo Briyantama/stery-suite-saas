@@ -48,7 +48,7 @@ Masalah bisnis yang diselesaikan: (1) menjual paket dengan satu organisasi, satu
 Segmen pelanggan: `tbd` (belum ada pernyataan segmen target HRIS/POS/suite di repo; pertanyaan terbuka OQ-10). SELA sudah menyebut segmen B2C dan B2B2C untuk acara (BRD Sela bagian 3).
 
 | Paket (SKU) | Produk yang termasuk | Mode yang didukung | Catatan |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `HRS` | HRIS-Stery | standalone, suite | Dimensi `hrs.employees.max`; tingkat dan harga `tbd` |
 | `POS` | POS-Stery | standalone, suite | Dimensi `pos.stores.max`, `pos.devices.max`; tingkat dan harga `tbd` |
 | `SEL` | SELA | standalone, suite | Paket Gratis/Hemat/Standar/Premium/Partner yang ada |
@@ -69,7 +69,7 @@ Segmen pelanggan: `tbd` (belum ada pernyataan segmen target HRIS/POS/suite di re
 ### 4.3 Ditunda
 
 | Butir | Alasan penundaan | Syarat membuka |
-|---|---|---|
+| --- | --- | --- |
 | Integrasi lintas produk INT-1 (tautan staf karyawan HRIS <-> pengguna POS), INT-2 (gathering HRIS membuat event SELA), INT-3 (event toko POS membuat event SELA dan mengundang pelanggan loyalitas yang opt-in) | Hipotesis; validasi permintaan belum dilakukan | Bukti permintaan pelanggan dan penyelesaian S4 (fase S5) |
 | Produk keempat dan seterusnya | Product Contract belum teruji dengan satu produk percobaan | S5 |
 | Payroll, pajak, rekrutmen, kinerja HRIS (modul HRS 09-12) | Ditunda oleh ADR-0004; perlu tinjauan hukum PPh 21, BPJS, THR | Tinjauan hukum dan keputusan pemilik |
@@ -89,7 +89,7 @@ Segmen pelanggan: `tbd` (belum ada pernyataan segmen target HRIS/POS/suite di re
 ## 5. Pemangku Kepentingan
 
 | Pemangku kepentingan | Peran | Kepentingan |
-|---|---|---|
+| --- | --- | --- |
 | Pemilik produk / sponsor bisnis | Penetapan harga, bundel, keputusan terbuka OQ-1..OQ-10 | Pendapatan paket, kendali risiko |
 | Engineering lead | Arsitektur, urutan penyelarasan S0-S5 | Beban kerja yang dapat ditangani tim kecil (RISK-SUI-08) |
 | Pelanggan organisasi (pemilik/admin organisasi) | Membeli paket, mengelola anggota dan produk | Satu login, satu tagihan, produk bisa dibeli terpisah |
@@ -104,7 +104,7 @@ Segmen pelanggan: `tbd` (belum ada pernyataan segmen target HRIS/POS/suite di re
 Prioritas: M = Must, S = Should, C = Could. Setiap BR dipetakan ke FR di FSD_Stery_Suite bagian 11.2.
 
 | **ID** | **Kebutuhan Bisnis** | **Prioritas** |
-|---|---|---|
+| --- | --- | --- |
 | BR-SUI-01 | Setiap produk (`HRS`, `POS`, `SEL`) dapat dijual dan dipakai secara independen, tanpa platform dan tanpa produk lain. | M |
 | BR-SUI-02 | Dua produk mana pun dapat dijual sebagai bundel (`HRS+POS`, `HRS+SEL`, `POS+SEL`) dengan satu organisasi dan satu tagihan. | M |
 | BR-SUI-03 | Ketiga produk dapat dijual sebagai bundel `SUITE` dengan satu organisasi, satu login, dan satu tagihan. | M |
@@ -131,7 +131,7 @@ Model: langganan organisasi untuk HRS, POS, dan bundel yang ditagih platform; pa
 ### 7.1 Matriks SKU
 
 | SKU | Produk | Mode standalone | Mode suite | Penagihan | Harga |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `HRS` | HRS | Tersedia (tanpa platform) | Tersedia | Standalone: di luar platform, `tbd`; suite: langganan platform | `tbd` |
 | `POS` | POS | Tersedia | Tersedia | Sama seperti `HRS` | `tbd` |
 | `SEL` | SEL | Tersedia (checkout per-event SELA) | Tersedia (checkout per-event SELA tetap di SELA, D-SUI-05) | Per-event di SELA | Lihat 7.3 |
@@ -147,7 +147,7 @@ Aturan diskon bundel, siklus penagihan (bulanan/tahunan), dan masa uji coba: `tb
 Nama dimensi tetap; nilai SELA berasal dari tabel `plans`; nilai lain `tbd`.
 
 | Dimensi | Produk | Gratis | Hemat | Standar | Premium | Partner | Sumber nilai |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `hrs.employees.max` | HRS | `tbd` | `tbd` | `tbd` | `tbd` | `tbd` | Belum ada di repo |
 | `pos.stores.max` | POS | `tbd` | `tbd` | `tbd` | `tbd` | `tbd` | Belum ada di repo |
 | `pos.devices.max` | POS | `tbd` | `tbd` | `tbd` | `tbd` | `tbd` | Belum ada di repo |
@@ -162,7 +162,7 @@ Tingkat paket untuk HRS dan POS (nama dan jumlah) `tbd`. Tingkat HRS dibatasi di
 ### 7.3 Harga paket SELA yang ada (per event)
 
 | Paket | Harga | Sumber |
-|---|---|---|
+| --- | --- | --- |
 | Gratis | Rp0 | `SELA/docs/BRD_Sela.md` bagian 7 |
 | Hemat | Rp39.000 | `PLAN_PRICE_IDR_HEMAT=39000` pada `SELA/.env.example` |
 | Standar | Rp129.000 | `PLAN_PRICE_IDR_STANDAR=129000` |
@@ -180,7 +180,7 @@ Tingkat paket untuk HRS dan POS (nama dan jumlah) `tbd`. Tingkat HRS dibatasi di
 ### 8.1 Opsi arsitektur
 
 | Opsi | Deskripsi | Keputusan |
-|---|---|---|
+| --- | --- | --- |
 | A. Polyrepo + platform | Tiga repo produk tetap; repo baru `stery-suite` berisi platform dan `kit` | **Dipilih** (D-SUI-01) |
 | B. Monorepo | Satu repo semua produk dan platform | Tidak dipilih: memindahkan tiga riwayat git dan memaksa satu pipeline CI untuk produk yang dijual terpisah |
 | C. Satu basis kode/runtime | Satu aplikasi dan satu basis data | **Ditolak**: melanggar penjualan mandiri per produk, memperbesar blast radius, memperumit UU PDP |
@@ -192,7 +192,7 @@ Perbandingan rinci ada di `00_Analisis_Dampak_Risiko` bagian 5.
 Data kompetitor untuk paket HRIS/POS/suite belum ada di repo; seluruh isinya `tbd` dan tidak boleh diisi tanpa riset.
 
 | Kategori pembanding | Pemain | Model harga | Kekuatan/kelemahan |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Suite SDM + kasir + acara terintegrasi | `tbd` | `tbd` | `tbd` |
 | HRIS lokal (UU PDP, PPh 21, BPJS) | `tbd` | `tbd` | `tbd` |
 | POS lokal (QRIS, PPN, struk) | `tbd` | `tbd` | `tbd` |
@@ -206,7 +206,7 @@ Pertanyaan riset: (1) apakah pelanggan UKM membeli HRIS dan POS dari satu vendor
 Keputusan berikut tertanam dalam dokumen dan boleh diubah pemilik; mengubah satu keputusan berarti menyusun ulang dokumen yang merujuknya.
 
 | ID | Keputusan | Ringkasan |
-|---|---|---|
+| --- | --- | --- |
 | D-SUI-01 | Komposisi, bukan konsolidasi | Tiga produk tetap unit deploy terpisah dengan basis data terpisah. Unit deploy keempat, platform `stery-suite`, memegang organisasi/identitas, entitlement, billing, notification hub, audit sink, dan konsol. Kode Go bersama di `stery-suite/kit` (diangkat dari `internal/{httpx,config,db,testdb,audit,piicrypt,objstore,health}` SELA, ditambah `tenantdb`, `session`, `outbox`). |
 | D-SUI-02 | Dua mode per produk | Env `STERY_MODE=standalone\|suite`, bawaan `standalone`. `standalone` = perilaku saat ini (pengguna, sesi, paket sendiri). `suite` = produk mendelegasikan identitas, entitlement, billing, notifikasi, audit ke platform lewat port Go `Identity`, `Tenant`, `Entitlement`, `Notification`, `Audit`, `Events` dengan dua adapter masing-masing. |
 | D-SUI-03 | Identitas pada mode suite | Platform menerbitkan sesi opaque di cookie HttpOnly `stery_session` (domain induk, nilai `tbd`); hanya hash-nya disimpan di Dragonfly platform. Produk memvalidasi lewat gRPC `stery.platform.v1.SessionService/Introspect` dengan cache lokal 30 detik, interceptor deny-by-default, dan token HMAC layanan. Tanpa JWT. |
@@ -241,7 +241,7 @@ Keputusan berikut tertanam dalam dokumen dan boleh diubah pemilik; mengubah satu
 Definisi lengkap risiko ada di `00_Analisis_Dampak_Risiko` bagian 4; tabel berikut merangkum dampak bisnisnya.
 
 | **Risiko** | **Dampak bisnis** | **Mitigasi** |
-|---|---|---|
+| --- | --- | --- |
 | RISK-SUI-01 Tidak ada fondasi tenancy/identitas/entitlement/billing bersama | Paket tidak dapat dijual | Bangun platform (S1, S4); BR-SUI-08 sampai BR-SUI-10 |
 | RISK-SUI-03 Penyelarasan HRIS/POS adalah penulisan ulang infrastruktur | Jadwal molor | Pertahankan domain/application; satu penyelarasan satu waktu |
 | RISK-SUI-07 Blast radius dan UU PDP (unggahan publik SELA vs NIK/NPWP HRIS) | Risiko hukum dan reputasi | Basis data, bucket, dan peran terpisah per produk; enkripsi PII |
@@ -255,7 +255,7 @@ Definisi lengkap risiko ada di `00_Analisis_Dampak_Risiko` bagian 4; tabel berik
 Definisi saja; seluruh target `tbd` karena belum ada baseline di repo.
 
 | KPI | Definisi | Target |
-|---|---|---|
+| --- | --- | --- |
 | Organisasi aktif | Jumlah organisasi dengan setidaknya satu entitlement aktif | `tbd` |
 | Penetrasi bundel | Persentase organisasi dengan dua atau lebih produk | `tbd` |
 | Konversi migrasi | Persentase pelanggan standalone yang dipindahkan ke suite tanpa kehilangan data | `tbd` |
@@ -270,7 +270,7 @@ Definisi saja; seluruh target `tbd` karena belum ada baseline di repo.
 Durasi dan tanggal `tbd` (tidak ada estimasi waktu di repo; pemilik menetapkan setelah meninjau bagian 6 analisis).
 
 | Fase | Cakupan | Gerbang keluar | Estimasi |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | S0 | Dokumen + penutupan closed-beta SELA | Gerbang stabilisasi SELA (analisis bagian 7) | `tbd` |
 | S1 | Ekstraksi `kit`; platform IAM dan ENT | `kit` dipakai SELA tanpa perubahan perilaku | `tbd` |
 | S2 | Penyelarasan POS | Gerbang stabilisasi POS | `tbd` |
@@ -285,7 +285,7 @@ Durasi dan tanggal `tbd` (tidak ada estimasi waktu di repo; pemilik menetapkan s
 Status per 6 November 2026. Estimasi kesiapan ada di analisis bagian 3 dan ditandai `[INFERENCE]`.
 
 | Produk | Status | Ringkasan | Bukti |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | SELA (`SEL`) | Sebagian | 427 commit (terakhir 2026-10-26); 76 dari 105 task Completed, 20 Pending Verification, 9 Not Started (tracker 2026-10-25); webhook Midtrans belum terbukti di URL publik; konflik retensi belum diputuskan | `SELA/docs/tracking/tracker.json`, `SELA/apps/api/go.mod`, `SELA/docs/BRD_Sela.md` |
 | POS-Stery (`POS`) | Sebagian | 21 commit (terakhir 2026-06-30); enam layanan gRPC nyata; `AddLoyaltyPoints` tidak punya pemanggil; dashboard memakai bauran pembayaran 55/30/15 buatan; CI usang (job Laravel) | `POS-Stery/PRD.md`, `POS-Stery/services/customer-service/internal/application/commands/add_loyalty_points.go`, `POS-Stery/.github/workflows/ci.yml` |
 | HRIS-Stery (`HRS`) | Sebagian | 33 commit (terakhir 2026-06-10); 39 dari 47 RPC punya handler nyata; migrasi absensi tidak valid; tidak ada HTTP mux terpasang; login web masih mock | `HRIS-Stery/services/attendance-service/migrations/001_create_attendance_schema.up.sql`, `HRIS-Stery/apps/web/src/routes/(auth)/login/+page.server.ts`, `HRIS-Stery/docs/adr/0004-defer-payroll-to-phase2.md` |
@@ -294,7 +294,7 @@ Status per 6 November 2026. Estimasi kesiapan ada di analisis bagian 3 dan ditan
 ### 13.2 Status per modul platform
 
 | Modul | Status | Keterangan | Bukti |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | SUI 01 IAM | Belum | Tidak ada kode; SELA hanya OTP lokal | `SELA/apps/api/services/auth/http.go` |
 | SUI 02 ENT | Belum | SELA hanya `events.package` -> `plans` per-event | `SELA/apps/api/services/payment/postgres.go` |
 | SUI 03 BIL | Belum | Provider pembayaran SELA dapat dipakai ulang (Midtrans + sandbox) | `SELA/apps/api/services/payment/provider.go` |

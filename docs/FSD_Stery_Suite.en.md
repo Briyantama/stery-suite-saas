@@ -27,7 +27,7 @@ This document is the functional and technical specification of the `stery-suite`
 ### 1.3 Document conventions
 
 | Convention | Meaning |
-|---|---|
+| --- | --- |
 | Status | `Selesai`, `Sebagian`, `Belum`, `Pending Verification`, `Ditunda`. In this document `Sebagian` is used only when a reusable implementation already exists in a product repo (e.g. SELA); the platform side stays `Belum`. |
 | `Evidence` | Repo path relative to the `moon-eye` root (prefixes `SELA/`, `POS-Stery/`, `HRIS-Stery/`, `stery-suite/`). This column contains only paths that exist today; target paths appear only in the 2.7 delta table and the 2.6 repo structure. |
 | Priority | M = Must, S = Should, C = Could. |
@@ -39,7 +39,7 @@ This document is the functional and technical specification of the `stery-suite`
 ### 1.4 Terms
 
 | Term | Definition |
-|---|---|
+| --- | --- |
 | Organisation (org) | The customer entity on the platform; owner of the subscription, members, and entitlements. |
 | Tenant | The data isolation unit inside a product (HRS/POS: tenant; SELA: host). In suite mode, a product tenant is linked to one org. |
 | Mode | `STERY_MODE=standalone` (default) or `suite`. The effective mode per tenant is described in 4.08 (FR-SUI-08.2). |
@@ -57,7 +57,7 @@ Architecture principle (D-SUI-01): composition, not consolidation. The three pro
 The following table is normative for the platform and is the conformance checklist (FR-SUI-08.7) for every product. The source column points to evidence that the standard exists in SELA. Versions are read from `SELA/apps/api/go.mod` (go 1.25.1, pgx v5.11.0, goose v3.26.0, go-redis v9.22.0, grpc v1.84.0) and `SELA/apps/web/package.json` (Svelte ^5.56.1, Vite ^8.0.16, TypeScript ^6.0.3, Vitest ^4.1.11, SvelteKit ^2.63.0).
 
 | # | Layer | Standard | Source in SELA |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Repo layout | Per product: `apps/api`, `apps/web`, `deploy/`, `scripts/`, `docs/`, `Makefile`, `CLAUDE.md`, `AGENTS.md` | `SELA/CLAUDE.md` (Layout section), `SELA/docs/FSD_Sela.md` (2.6), `SELA/AGENTS.md`, `SELA/Makefile` |
 | 2 | Language | Go >= 1.25.1; one module per product `github.com/<owner>/<product>` (owner handle `Briyantama` as in SELA, not verified for new repos, OQ-7) | `SELA/apps/api/go.mod` |
 | 3 | Decomposition | Module = Go package `services/<nama>` in one process; core `Service` + Postgres repository + HTTP adapter + optional gRPC adapter; boundaries via Go interfaces and proto contracts so they can be split later | `SELA/apps/api/services`, `SELA/docs/FSD_Sela.md` (2.6) |
@@ -89,7 +89,7 @@ Implementation notes for the platform:
 The platform is a single Go process with the following modules (STACK-SPEC row 3). Boundaries between modules are Go interfaces; the contracts used by products are published as gRPC.
 
 | Module | Package (target) | Responsibility | Depends on | Transport |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 01 IAM | `services/iam` | Users, organisations, members, invitations, sessions, platform RBAC, service tokens | Postgres, Dragonfly, NTF | REST, gRPC `SessionService`, `LinkService` |
 | 02 ENT | `services/entitlement` | Product/SKU catalogue, entitlements, signed snapshots, usage | Postgres, BIL (events), IAM | REST, gRPC `EntitlementService` |
 | 03 BIL | `services/billing` | Prices, subscriptions, invoices, payment `Provider`, webhook, renewal/expiry jobs | Postgres, ENT, NTF, `Provider` | REST |
@@ -138,7 +138,7 @@ flowchart LR
 ### 2.3 Interface components
 
 | Component | Users | Protocol | Notes |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Platform console (`apps/web`) | Org owner, org admin, operator | HTTPS, REST `/api/v1`, cookie `stery_session` | SvelteKit SPA (D-SUI-09); screens in section 10 |
 | Platform REST API | Console, Midtrans (webhook) | HTTPS | Envelope `{success,data,error}`; public webhook, signature-verified |
 | Platform gRPC `stery.platform.v1` | Product APIs (machine) | gRPC | Deny-by-default; service HMAC token; not exposed to the browser |
@@ -149,7 +149,6 @@ flowchart LR
 | Midtrans Core API | BIL | HTTPS | QRIS; webhook to `/api/v1/billing/webhook/midtrans` |
 | Caddy | All | HTTPS | Reverse proxy; pattern `SELA/deploy/Caddyfile` |
 
-
 ### 2.4 Dragonfly usage, Go ports, gRPC contracts, and platform data model
 
 #### 2.4.1 Dragonfly usage
@@ -157,7 +156,7 @@ flowchart LR
 The platform uses its own single Dragonfly instance (suite profile: port 6380). Each product still uses its own Dragonfly instance (D-SUI-07); SELA keys are unprefixed, so products never share an instance. TTL values not listed are `tbd`.
 
 | Key (platform) | Content | TTL | Source pattern |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `sess:{hmac}` | Session record (`session_id`, `user_id`, active `org_id`, per-product attributes); key = HMAC of the token with domain prefix `session` | Session TTL; SELA uses a 12-hour default (`SELA/apps/api/services/auth/service.go`), platform value `tbd` (OQ-F1) | SELA `SaveSession`: only the hash is stored |
 | `usess:{user_id}` | Set of the user's `session_id`, for revoking all sessions (FR-SUI-01.7) | Follows the longest session | new |
 | `otp:{hmac}` | HMAC of the 6-digit code; single use | 5 minutes | `SELA/CLAUDE.md` (Auth invariants) |
@@ -210,7 +209,7 @@ type Events interface {
 ```
 
 | Port | `standalone` adapter (default) | `suite` adapter | Reused assets |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Identity` | Local product session: SELA email OTP + cookie `sela_session`; HRS and POS password (existing hash) + opaque session, JWT removed (D-SUI-10) | Introspection via `SessionService/Introspect` with a 30-second cache; cookie `stery_session` | `SELA/apps/api/services/auth/service.go` (`Authenticate`), `SELA/apps/api/services/auth/interceptor.go` |
 | `Tenant` | HRS/POS: local tenant via `kit/tenantdb.WithTenant`; SELA: no tenant (plain transaction without GUC) | Platform org mapped to product tenant (`tenants.org_id`; SELA: `hosts.org_id`), then the same `WithTenant` | `kit/tenantdb` (new) |
 | `Entitlement` | Local package: SELA `events.package` -> `plans`; HRS/POS: local package `tbd` | `EntitlementService/Check` + signed snapshot (FR-SUI-02.4 through FR-SUI-02.7) | `SELA/apps/api/services/payment/postgres.go`, `SELA/apps/api/internal/db/migrations/0011_plans_transactions.sql` |
@@ -223,7 +222,7 @@ type Events interface {
 All platform services sit behind a deny-by-default interceptor (SELA's `NewUnaryHostInterceptor` pattern) that requires the service HMAC token; there are no public methods. Message sketches are in 6.3.
 
 | Service | Methods | Caller | Function | FR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `stery.platform.v1.SessionService` | `Introspect`, `SetAttribute`, `Revoke` | Product | Turns a session token into a Principal; sets per-product session attributes; revokes sessions | FR-SUI-01.5, FR-SUI-01.12 |
 | `stery.platform.v1.EntitlementService` | `Check`, `GetSnapshot`, `ReportUsage` | Product | Feature check, fetch signed snapshot, report usage | FR-SUI-02.4, FR-SUI-02.5, FR-SUI-02.10 |
 | `stery.platform.v1.IntegrationService` | `Publish` | Product | Receives envelopes from the product outbox | FR-SUI-07.8 |
@@ -237,7 +236,7 @@ All platform services sit behind a deny-by-default interceptor (SELA's `NewUnary
 Database `stery_platform`, app role `stery_platform` (NOBYPASSRLS), separate migration role. PII class: T = high (`piicrypt` encryption), S = medium, N = none. Tenant on the platform = org: the RLS policy uses `current_setting('app.tenant_id', true)::uuid`, which holds the `org_id`. Column details, policies, and diagrams are in section 5.
 
 | Table | Content | Key columns | RLS | PII |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `users` | Cross-org user identity | `user_id`, `email_ciphertext`, `email_blind_index`, `name`, `password_hash` (nullable), `status` | No (cross-org); only the IAM module accesses it | T (email), S (name), credentials |
 | `orgs` | Organisations | `org_id`, `name`, `status`, `created_by` | Yes (`org_id` = tenant or member) | N |
 | `org_members` | Membership | `member_id`, `org_id`, `user_id`, `org_role`, `status` | Yes | N |
@@ -332,14 +331,14 @@ Claim: `WITH due AS (SELECT event_id FROM outbox WHERE status = 'pending' AND ne
 The suite profile runs the platform and three products on one development/staging host without port collisions (BR-SUI-18). Each product's standalone profile is unchanged.
 
 | Service | API | gRPC | Web | Notes |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Platform | 8180 | 9190 | 5273 | gRPC not opened to the public |
 | HRIS (`HRS`) | 8280 | 9290 | 5373 | |
 | POS (`POS`) | 8380 | 9390 | 5473 | One `apps/web` (D-SUI-09) |
 | SELA (`SEL`) | 8080 | 9090 | 5173 | Unchanged |
 
 | Shared resource | Port | Content |
-|---|---|---|
+| --- | --- | --- |
 | PostgreSQL 18 | 5432 | Four databases: `stery_platform`, `hris`, `pos`, `sela`; one app role per database (`stery_platform`, `hris`, `pos`, `sela`); one separate migration role per database (name `tbd`) |
 | Dragonfly | 6379 SELA, 6380 platform, 6381 HRIS, 6382 POS | One instance per product (D-SUI-07) |
 | RustFS | 9000 (S3), 9001 (console) | One bucket and one access key per product; SELA `sela-media` (default `S3_BUCKET` in `SELA/deploy/docker-compose.yml`), other bucket names `tbd` |
@@ -349,7 +348,7 @@ The suite profile runs the platform and three products on one development/stagin
 Current standalone ports (evidence read from `.env.example`) and their collisions:
 
 | Product | Current ports | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | SELA | API 8080, gRPC 9090, web 5173; e2e uses 8081, 9091, 5174, 5175; local Postgres 5432; Dragonfly 6379; RustFS 9000/9001; ClamAV 3310 | `SELA/CLAUDE.md`, `SELA/deploy/docker-compose.yml` |
 | POS | Gateway `HTTP_PORT=8000`; gRPC 8081 through 8086; admin 5173, cashier 5174; Postgres 5432; Redis 6379; NATS 4222; OTLP 4318 (comment mentions 4317 for gRPC) | `POS-Stery/.env.example` |
 | HRIS | Postgres 5432; Redis 6379; NATS 4222; OTLP 4317; per-service gRPC port via `GRPC_PORT` | `HRIS-Stery/.env.example` |
@@ -383,7 +382,7 @@ Consequence: `apps/api/go.mod` (platform) and `kit/go.mod` are two modules in on
 #### 2.6.2 Sources of the `kit` packages
 
 | `kit` package | Source in SELA | Change when lifted | Effort `[INFERENCE]` |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `kit/httpx` | `SELA/apps/api/internal/httpx` (`response.go`, `decode.go`, `proxy.go`) | Package move only | S |
 | `kit/config` | `SELA/apps/api/internal/config/config.go` | The SELA config struct is product-specific; only the fail-fast env reader, secret redactor, and parsers (e.g. trusted proxy) are lifted | M |
 | `kit/db` | `SELA/apps/api/internal/db/migrate.go` | Migrations become a parameter (`embed.FS`) so each product carries its own migrations | M |
@@ -419,7 +418,7 @@ The order follows D-SUI-12; one alignment runs at a time; each alignment ends at
 The "current state" column points to evidence of existence (path exists); the "target" column uses target package names. Effort S/M/L is `[INFERENCE]` and consistent with analysis section 6.
 
 | As-is -> to-be | Affected modules | Reuse (domain and application kept, infrastructure and interfaces rewritten) | Effort |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | SELA: `internal/{httpx,config,db,testdb,audit,piicrypt,objstore,health}` -> `stery-suite/kit/*` re-imported (S1) | All SELA modules | All packages as source; `SELA/apps/api/internal` | M |
 | SELA: `services/auth`, `services/payment`, `internal/audit` -> `standalone` adapters for `Identity`, `Entitlement`, `Audit` (S1/S4) | 01 IAM, 02 ENT, 05 AUD on the SELA side | `SELA/apps/api/services/auth/service.go`, `SELA/apps/api/services/payment/provider.go` | M |
 | SELA: table `hosts` -> nullable columns `org_id`, `external_subject` in suite mode (S4) | 01 IAM, 07 INT | `SELA/apps/api/internal/db/migrations/0001_hosts.sql` | S |
@@ -448,7 +447,7 @@ Section 2 of both FSDs is written in parallel with this document. Alignment note
 ### 3.1 Actors
 
 | Actor | Description | How they sign in |
-|---|---|---|
+| --- | --- | --- |
 | Organisation owner (`org_owner`) | Buys the package and is responsible for billing; one or more per org | Console; email OTP |
 | Organisation admin (`org_admin`) | Manages members, product access, integrations, links | Console |
 | Member / product user (`org_member`) | Employee, cashier, or host who uses HRS, POS, or SELA | Product via cookie `stery_session` |
@@ -465,7 +464,7 @@ Section 2 of both FSDs is written in parallel with this document. Alignment note
 The roles and permission codes below are an initial proposal `[INFERENCE]` following SELA's `resource:action` permission pattern (`SELA/apps/api/internal/db/migrations/0004_rbac_foundation.sql`). SELA itself seeds only the `host` role and a few permissions; the platform seed is defined here and goes into the platform's first migration. Unlisted permissions are denied (deny-by-default).
 
 | Permission | `org_owner` | `org_admin` | `org_member` | `platform_operator` |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `orgs:read` | yes | yes | yes | yes (all orgs) |
 | `orgs:update` | yes | - | - | - |
 | `members:read`, `members:update`, `members:delete` | yes | yes | - | - |
@@ -493,7 +492,7 @@ The roles and permission codes below are an initial proposal `[INFERENCE]` follo
 ### 3.4 Enforcement points
 
 | Layer | Mechanism | FR |
-|---|---|---|
+| --- | --- | --- |
 | Platform gRPC | Deny-by-default interceptor + service HMAC token | FR-SUI-01.13 |
 | Platform REST | `RequirePermission(code)` + `stery_session` session | FR-SUI-01.11 |
 | Platform database | RLS `ENABLE`+`FORCE`, `USING`+`WITH CHECK` | FR-SUI-SEC.5 |
@@ -502,11 +501,12 @@ The roles and permission codes below are an initial proposal `[INFERENCE]` follo
 ### 3.5 Differences per mode
 
 | Aspect | `standalone` | `suite` (linked tenant) |
-|---|---|---|
+| --- | --- | --- |
 | Login | Product users and sessions | Platform login; product calls `Introspect` |
 | Roles | Product-local roles | Product roles assigned on the platform (`member_product_access`) |
 | Entitlement | Local package | Platform snapshot |
 | Unlinked tenant on a `suite` deployment | Not applicable | Still uses the `standalone` adapter (FR-SUI-08.2) |
+
 ## 4. Functional Specification per Module
 
 All FRs have status `Belum` on the platform side; `Sebagian` means only reuse assets in the existing product repos. The `Evidence` column holds paths that exist today; no path means there is no relevant code or document yet.
@@ -516,7 +516,7 @@ All FRs have status `Belum` on the platform side; `Sebagian` means only reuse as
 The IAM module issues and validates suite sessions and manages users, organisations, members, invitations, and platform RBAC. SELA has no concept of an organisation or an external identity (`SELA/apps/api/services/auth/service.go`, `SELA/apps/api/internal/db/migrations/0001_hosts.sql`); HRS and POS use passwords and JWT.
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-01.1 | User registration and organisation creation: a verified user creates a new org and becomes `org_owner`; one user may be a member of many orgs. Unique name/slug rules `tbd`. | M | Not started | No platform code yet; SELA only creates a host on the first OTP: `SELA/apps/api/services/auth/service.go` |
 | FR-SUI-01.2 | Platform email OTP login follows the SELA invariants: 6-digit code, only the HMAC is stored, 5-minute TTL, single use, 5 wrong attempts lock the address for 15 minutes, identical request response for known and unknown addresses, rate limiter per address and per connection. | M | Not started | Implementation reference: `SELA/apps/api/services/auth/service.go`, `SELA/apps/api/services/auth/limiter.go`, `SELA/CLAUDE.md` |
 | FR-SUI-01.3 | Password login for users migrated from HRS/POS: the bcrypt hash is imported at link finalisation and verified without changing the hash (D-SUI-10); the user may switch to OTP. New password policy `tbd` (OQ-F4). | S | Not started | Old login: `HRIS-Stery/services/auth-service/internal/domain/user.go`, `POS-Stery/services/auth-service/internal/application/commands/login.go` |
@@ -553,7 +553,7 @@ stateDiagram-v2
 ```
 
 | Object | Status | Transitions |
-|---|---|---|
+| --- | --- | --- |
 | Invitation | `pending` -> `accepted`, `expired`, `revoked` | Accepted once; expired by time; revoked by admin |
 | Member | `active` -> `suspended` -> `removed` | Admin; `removed` revokes sessions and product access |
 | Org | `active` -> `suspended` | Operator; sessions of a suspended org are revoked |
@@ -571,7 +571,7 @@ The ENT module stores the catalogue of products, SKUs, features, and limit dimen
 The SELA dimension values in the catalogue come from `plans` (verification: `0011_plans_transactions.sql` with retention updated by `0015_plan_retention_policy.sql`): Gratis guest_cap 30, retention 7 days, watermark yes; Hemat 80 and 30 days; Standar 200 and 365 days, video and `zip_full_resolution` yes; Premium no guest limit and 730 days; Partner no guest limit and retention never. The initial 0011 values (retention 3/14/30/365) have been superseded by 0015 (11.3).
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-02.1 | Catalogue as data: tables `products`, `features` (kind `flag` or `limit`), `skus`, `sku_items`; SKUs `HRS`, `POS`, `SEL`, `HRS+POS`, `HRS+SEL`, `POS+SEL`, `SUITE`; dimensions `hrs.employees.max`, `pos.stores.max`, `pos.devices.max`, `sel.guest_cap`, `sel.retention_days`, `sel.watermark`, `sel.video`, `sel.zip_full_resolution`. A SKU without a price cannot be purchased (SELA pattern). HRS/POS values `tbd`. | M | Not started | Reference for catalogue as data: `SELA/apps/api/internal/db/migrations/0011_plans_transactions.sql` |
 | FR-SUI-02.2 | Per-product stabilisation gate: `products.gate_status`; a SKU containing a product whose gate is not yet closed cannot be marked `sellable` and cannot be purchased; gate closure is recorded by the operator with audit (BR-SUI-15). | M | Not started | Gate list: `stery-suite/docs/00_Analisis_Dampak_Risiko.id.md` |
 | FR-SUI-02.3 | Entitlement derivation: on an `active` subscription, `entitlements` rows per org, product, and feature are derived from `sku_items`; a bundle is the union of its products; the org version increments (`entitlement_versions`). | M | Not started | No code yet; SELA raises the package per event with `UPDATE events ... FROM plans`: `SELA/apps/api/services/payment/postgres.go` |
@@ -596,7 +596,7 @@ The SELA dimension values in the catalogue come from `plans` (verification: `001
 **State machine (degrade decision).**
 
 | Snapshot condition | Platform | `Allows` result for paid feature |
-|---|---|---|
+| --- | --- | --- |
 | Fresh (current version) | Reachable | Per snapshot |
 | Old but within grace period | Unreachable | Per last snapshot |
 | Beyond grace period | Unreachable | `false` (fail-closed); basic features remain |
@@ -614,7 +614,7 @@ The SELA dimension values in the catalogue come from `plans` (verification: `001
 The BIL module bills suite subscriptions (HRS, POS, bundles) through Midtrans QRIS using SELA's `Provider` abstraction (D-SUI-05). SELA per-event checkout does not pass through this module. The `sandbox` and `midtrans` providers already exist in SELA; Midtrans has been tested against the real sandbox (QRIS charge, SHA512 signature, expiry, simulator payment) but the inbound webhook on a public URL is not yet proven (`SELA/docs/aidlc/intents/261014-closed-beta-readiness/10-lembar-jawaban-pemilik.md`, T29.1 Pending Verification); this is part of the S0 gate and a prerequisite for production suite billing (RISK-SUI-14). Xendit has been removed (14 October 2026).
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-03.1 | Prices as data: table `prices(sku_code, billing_cycle, amount_idr, valid_from)` filled by the operator; no prices in code; all HRS, POS, and bundle prices `tbd` (OQ-1) so the table is empty and checkout rejects SKUs without a price. | M | Not started | Reference for "package without price cannot be purchased": `SELA/apps/api/services/payment/service.go`, `SELA/.env.example` |
 | FR-SUI-03.2 | Subscription checkout: the org chooses SKU and cycle -> the platform creates `subscriptions` (`pending`) and `invoices` (`open`) and calls `Provider.CreateCharge`; one `open` invoice per subscription (partial unique index); `org_owner` only. | M | Not started | Reference for table and index: `SELA/apps/api/internal/db/migrations/0011_plans_transactions.sql` (`transactions_one_pending_per_event`) |
 | FR-SUI-03.3 | `Provider` abstraction identical to SELA (`Name`, `CreateCharge`, `ParseNotification`; types `Charge`, `ChargeResult`, `Notification`) with adapters `midtrans` and `sandbox`; an empty `PAYMENT_PROVIDER` makes checkout answer 503. Copy or extraction into `kit/payment` is an open decision (OQ-F5). | M | Partial | `SELA/apps/api/services/payment/provider.go`, `SELA/apps/api/services/payment/midtrans.go` |
@@ -651,7 +651,7 @@ stateDiagram-v2
 ```
 
 | Invoice | Transitions |
-|---|---|
+| --- | --- |
 | `open` -> `paid` | Valid notification, amount matches |
 | `open` -> `expired` | `expires_at` passed (worker) or `expire` notification |
 | `open` -> `failed` or `cancelled` | Provider notification |
@@ -668,7 +668,7 @@ stateDiagram-v2
 The NTF module sends platform email (OTP, invitations, invoices) and receives messages from suite-mode products. The pattern exists in SELA: outbox `notifications` with `UNIQUE (event_id, kind)`, recipient not stored, `next_attempt_at` lease, claim with `FOR UPDATE SKIP LOCKED` (`SELA/apps/api/internal/db/migrations/0008_notifications.sql`, `SELA/apps/api/services/event/postgres.go`) and per-kind opt-out preferences (`SELA/apps/api/internal/db/migrations/0028_notification_prefs.sql`). In-app and WhatsApp channels, and notifications for guests, are out of scope.
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-04.1 | Hub notification outbox: table `notifications` (`kind`, `org_id`, `user_id`, `dedupe_key` unique per `(org_id, kind)`, sealed `payload_ciphertext`, `status`, `attempts`, `next_attempt_at`); the destination address is not stored in the outbox, it is read from `users` at send time. | M | Not started | Reference: `SELA/apps/api/internal/db/migrations/0008_notifications.sql` |
 | FR-SUI-04.2 | An in-process ticker worker claims rows with a lease and `FOR UPDATE SKIP LOCKED`, sends via SMTP outside the database transaction, records attempts and errors; doubling backoff; attempt limit and interval `tbd`; rows over the limit become `failed`. | M | Not started | Reference: `SELA/apps/api/services/event/postgres.go`, `SELA/apps/api/services/auth/smtp.go` |
 | FR-SUI-04.3 | Platform emails in Indonesian and English: OTP code, member invitation, invoice created, invoice paid, subscription expiry warning. The language follows the user's preference. | M | Not started | Reference for SMTP sender and language preference: `SELA/apps/api/services/auth/smtp.go` |
@@ -693,7 +693,7 @@ The NTF module sends platform email (OTP, invitations, invoices) and receives me
 The AUD module stores the platform audit trail and acts as the audit sink for suite-mode products. Local per-product audit remains in both modes. Patterns reused: append-only `audit_logs` table with a trigger rejecting `UPDATE`, `DELETE`, and `TRUNCATE` (`SELA/apps/api/internal/db/migrations/0014_pii_encryption_audit.sql`), `audit.Logger` with `Sanitize`, HTTP middleware, and readers (`SELA/apps/api/internal/audit/audit.go`, `SELA/apps/api/internal/audit/http.go`, `SELA/apps/api/internal/audit/reader.go`).
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-05.1 | Append-only platform `audit_logs`: columns `audit_id`, `occurred_at`, `action`, `outcome` (`success`/`failure`/`denied`), `actor_type`, `actor_id`, `org_id`, `product_code`, `event_id`, `subject_type`, `subject_id`, `client_hash`, `details` (JSON object); trigger rejects `UPDATE`/`DELETE`/`TRUNCATE`; partial unique `event_id` for sink idempotency. | M | Not started | Reference for schema and trigger: `SELA/apps/api/internal/db/migrations/0014_pii_encryption_audit.sql` |
 | FR-SUI-05.2 | Platform events recorded: login, logout, session revocation, org creation, member and role changes, invitations, checkout, invoices, subscription and entitlement changes, link and finalisation, product gate closure, operator actions. Details never contain tokens, OTP codes, or raw email/phone; client address only as a keyed hash. | M | Not started | Reference for `Sanitize` and middleware: `SELA/apps/api/internal/audit/audit.go`, `SELA/apps/api/internal/audit/http.go` |
 | FR-SUI-05.3 | `AuditService/Record`: accepts a batch of product events (`product_code`, `org_id`, actor, action, outcome, `event_id`); idempotent per `event_id`; a product cannot write on behalf of another product or org (checked against the service token and org link). | S | Not started | No platform code yet |
@@ -718,7 +718,7 @@ The AUD module stores the platform audit trail and acts as the audit sink for su
 The console is `stery-suite/apps/web`, a SvelteKit SPA with SELA conventions (STACK-SPEC row 15): `ssr=false`, `adapter-static`, `apiFetch` with `credentials: 'include'`, envelope mirror, `{id,en}` i18n catalogues with a parity test. The screen list is in section 10.
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-06.1 | Console web conventions: SvelteKit 2, Svelte 5, Vite 8, TypeScript 6, `ssr=false`, `adapter-static`, npm, Node >= 20.19; the only API caller is `apiFetch` (relative path, 15 seconds, `ApiError`); `?next=` only through `safeNextPath`. | M | Not started | Reference: `SELA/apps/web/package.json`, `SELA/apps/web/src/lib/api/client.ts`, `SELA/apps/web/src/lib/api/envelope.ts` |
 | FR-SUI-06.2 | Sign-in screen: OTP request, 6-digit verification, errors without revealing whether the address is known, logout; a user without an org is redirected to org creation. | M | Not started | Reference for host sign-in flow: `SELA/apps/web/src/lib/api/auth.ts` |
 | FR-SUI-06.3 | Org onboarding wizard: create org, choose SKU (`HRS`, `POS`, `SEL`, `HRS+POS`, `HRS+SEL`, `POS+SEL`, `SUITE`), review price summary (`tbd` when none yet), pay via QRIS, then continue to the first product (PRD 5.1). | M | Not started | Reference for package picker and payment page: `SELA/apps/web/src/lib/api/payments.ts` |
@@ -747,7 +747,7 @@ The INT module has two parts that must be kept separate: (A) org-tenant linking,
 **A. Org-tenant link.**
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-07.1 | `integration_links`: one link per `(org_id, product_code)`; column `kind` (`provision` for a new org, `migrate` for a standalone customer), `tenant_ref` (product tenant/host id), `status` (`pending`, `confirmed`, `finalized`, `unlinked`); product data is never moved between databases. | M | Not started | No platform code yet |
 | FR-SUI-07.2 | `migrate` link: the org admin creates a link in the console, the platform shows a single-use link code (only the HMAC is stored); the standalone tenant admin enters the code in product settings; the product calls `LinkService/Confirm(link_code, product_code, tenant_ref, local_users[])` with the service token; the link becomes `confirmed`. A running standalone product does not change until finalisation (dual-run). | M | Not started | Reference for hashed link token shown once: `SELA/apps/api/internal/db/migrations/0012_hof_share_links.sql` |
 | FR-SUI-07.3 | `provision` link: when a product's entitlement first becomes active for an org without a link, the platform creates a `pending` link and sends `platform.tenant.provision_requested` (`link_id`, `org_id`, org name, owner) via `Deliver`; the product creates the tenant idempotently per `org_id` with initial configuration, sets `tenants.org_id`, then calls `LinkService/Confirm`; the link becomes `finalized` immediately because there are no local users. | M | Not started | Tenant provisioning behaviour in `suite` mode by the platform is stated in `POS-Stery/docs/BRD_POS.id.md` (BR-POS-21) |
@@ -759,7 +759,7 @@ The INT module has two parts that must be kept separate: (A) org-tenant linking,
 **B. Cross-product events.**
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-07.8 | `IntegrationService/Publish`: accepts a batch of envelopes from the product outbox; rejects invalid envelopes (`event_id` not a UUIDv7, `org_id` not linked to the calling product, `event_type` absent from the manifest's `events_published`); idempotent per `event_id`. | S | Not started | Outbox relay reference: `SELA/apps/api/services/instant/jobs.go` |
 | FR-SUI-07.9 | Routing and opt-in: the platform writes `deliveries` only when the org is entitled to `integration.<a>_<b>` and the admin has enabled `integration_subscriptions` for the product pair and event kind; platform control events (`platform.tenant.provision_requested`, `platform.link.finalized`, `platform.entitlement.changed`) are always delivered to that org's products. | S | Not started | No platform code yet |
 | FR-SUI-07.10 | `DeliveryService/Deliver` in the product: at-least-once; consumers must be idempotent via `processed_events` per `(consumer, event_id)`; a transient error yields a nack so it is retried; the target tenant is mapped from `org_id`. | S | Not started | Claim and lease reference: `SELA/apps/api/services/event/postgres.go` |
@@ -771,7 +771,7 @@ The INT module has two parts that must be kept separate: (A) org-tenant linking,
 All three are Could (C). Shared prerequisites: evidence of customer demand (OQ-9), S4 completed, the org is entitled to `integration.<a>_<b>`, the admin enables opt-in, and a UU PDP review of the data that moves (only identifiers and minimum metadata; never NIK, NPWP, or date of birth).
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-07.13 | INT-1, HRS <-> POS staff link (feature `integration.hrs_pos`): `hrs.employee.terminated` from HRS is enriched by the platform with the `user_product_links` mapping (`external_ref` of the POS user) and deactivates the POS user: the platform revokes that member's POS product access (effective after the 30-second cache) and sends an event to POS to deactivate the local user record. The employee <-> POS user mapping is created by an admin (not automatic). | C | Not started | As-is event `hris.workforce.employee.terminated`: `HRIS-Stery/services/employee-service/internal/infrastructure/nats_publisher.go` |
 | FR-SUI-07.14 | INT-2, HRS gathering creates a SELA event (feature `integration.hrs_sel`): `hrs.gathering.scheduled` (hypothesis in FSD_HRIS 2.5; HRS has no gathering concept yet so the event source is `tbd`) causes SELA to create a draft event of category `gathering` for the host mapped to an actor in that org; one-way direction. | C | Not started | Hypothetical event: `HRIS-Stery/docs/FSD_HRIS.id.md` (2.5); SELA event category: `SELA/apps/api/internal/db/migrations/0002_event_categories.sql` |
 | FR-SUI-07.15 | INT-3, a POS store event creates a SELA event and invites opted-in loyalty customers (feature `integration.pos_sel`): POS has neither a store-event concept nor customer consent yet (event name `tbd`, FSD_POS); invitations only for customers with recorded consent; delivery via the notification hub. | C | Not started | POS customers and loyalty: `POS-Stery/services/customer-service/internal/application/commands/add_loyalty_points.go`; BR-POS-20 in `POS-Stery/docs/BRD_POS.id.md` |
@@ -798,7 +798,7 @@ stateDiagram-v2
 ```
 
 | Delivery | Transitions |
-|---|---|
+| --- | --- |
 | `pending` -> `sent` | `Deliver` succeeds (ack) |
 | `pending` -> `pending` | transient error; `attempts` increases; `next_attempt_at` moves back |
 | `pending` -> `dead` | attempt limit exceeded; the operator can retry |
@@ -814,7 +814,7 @@ stateDiagram-v2
 The DEP module governs the operating mode, the deployment profile, and the contract a product must satisfy to join (BR-SUI-06, BR-SUI-18). SELA today already satisfies almost all contract items because the contract is derived from SELA; HRS and POS satisfy it through alignment S2 and S3.
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-08.1 | `STERY_MODE=standalone` (default) or `suite`, validated fail-fast at start; any other value is rejected; `suite` requires `STERY_PRODUCT_CODE`, `PLATFORM_GRPC_ADDR`, `STERY_SERVICE_SECRET`, and the snapshot public key; secrets are never printed. Variable names are a proposal `[INFERENCE]` except `STERY_MODE`. | M | Not started | Reference for fail-fast env validation: `SELA/apps/api/internal/config/config.go`, `SELA/.env.example` |
 | FR-SUI-08.2 | Effective mode per tenant: on a `suite` deployment, a linked tenant (`org_id` populated) uses the `suite` adapter; an unlinked tenant keeps using the `standalone` adapter (SELA: `hosts.org_id` NULL); on a `standalone` deployment the platform is never called. A platform failure never affects an unlinked tenant. Adapter selection is done once per request by the routing adapter. | M | Not started | Decision explained in 7.2; nullable column `hosts.org_id` in D-SUI-08 |
 | FR-SUI-08.3 | Six ports (`Identity`, `Tenant`, `Entitlement`, `Notification`, `Audit`, `Events`) with two adapters each, written against `kit/port` (2.4.2) and passing the same `kit/contract` contract test suite for both adapters. Ports are introduced in S2 (POS) with a local adapter, before S4 (FSD_POS 2.7). | M | Not started | Reference assets for SELA local adapters: `SELA/apps/api/services/auth/service.go`, `SELA/apps/api/internal/audit/audit.go` |
@@ -860,7 +860,7 @@ Naming rules: uppercase product code (`HRS`, `POS`, `SEL`); lowercase feature ke
 **Product Contract requirements.** A new product joins when all of the following rows are satisfied (PRD 10.2).
 
 | # | Requirement | Verification | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Valid manifest | Manifest import by the operator succeeds; schema validated | FR-SUI-08.4 |
 | 2 | Six ports with two adapters | `kit/contract` contract tests green for both adapters | FR-SUI-08.3 |
 | 3 | `STERY_MODE` | Start fails on an invalid value; default `standalone` | FR-SUI-08.1, FR-SUI-08.2 |
@@ -872,7 +872,7 @@ Naming rules: uppercase product code (`HRS`, `POS`, `SEL`); lowercase feature ke
 **STACK-SPEC conformance checklist.** The "current conformance" columns hold per-product row notes; evidence for HRS and POS comes from analysis 3.2 and 3.3 and the respective FSDs.
 
 | # | Item | Verification method | SELA | POS | HRS |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | 1 | Repo layout | Files `apps/api`, `apps/web`, `deploy`, `scripts`, `docs`, `Makefile`, `CLAUDE.md`, `AGENTS.md` exist | Done | Not started (`apps/admin`, `apps/cashier`, `services/*-service`) | Not started (`apps/web`, `apps/api-gateway`, `services/*-service`) |
 | 2 | Go >= 1.25.1, single module | `go.mod` | Done | Not started (module per service) | Not started (module per service) |
 | 3 | Package decomposition | `services/<nama>` in one process | Done | Not started | Not started |
@@ -909,7 +909,7 @@ Evidence for the table rows above: SELA `SELA/apps/api/go.mod`, `SELA/scripts/ch
 Security FRs apply to the platform and are a prerequisite for the `suite` adapters in products. Threat and UU PDP explanation is in section 8.
 
 | ID | Requirement | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-SEC.1 | Cookie `stery_session`: HttpOnly, Secure (except local development `COOKIE_SECURE=false`), SameSite=Lax, Path `/`, Domain per OQ-3; expiry follows session TTL; cleared on logout. | M | Not started | Reference: `SELA/apps/api/services/auth/http.go` |
 | FR-SUI-SEC.2 | No JWT and no token in `localStorage` or JSON; session only as an HttpOnly cookie; Dragonfly stores only the HMAC; logs and audit never contain tokens. | M | Not started | Reference: `SELA/apps/api/services/auth/service.go`; JWT state in HRS/POS: `HRIS-Stery/apps/web/src/lib/stores/auth.ts`, `POS-Stery/services/auth-service/internal/application/commands/login.go` |
 | FR-SUI-SEC.3 | HMAC service token between products and platform: `product_code`, time, nonce, signature; clock tolerance `tbd`; replay protection via `svcnonce`; per-product secret with rotation (the previous secret is accepted during the transition period); constant-time comparison. | M | Not started | Reference for keyed HMAC and rotation: `SELA/apps/api/internal/piicrypt/piicrypt.go`, `SELA/apps/api/services/auth/service.go` |
@@ -922,7 +922,6 @@ Security FRs apply to the platform and are a prerequisite for the `suite` adapte
 | FR-SUI-SEC.10 | UU PDP data subject rights: users can request a copy and deletion or anonymisation of their identity data; platform deletion anonymises `users` and links audit to a pseudonym, without deleting billing records that must be retained; retention policy and DPO role `tbd`. | S | Not started | Reference for retention-based deletion: `SELA/apps/api/services/media/retention.go` |
 | FR-SUI-SEC.11 | Cross-product data minimisation: the platform stores only identity and organisation metadata; NIK, NPWP, date of birth, and POS transaction data are never replicated to the platform or to other products; event payloads are limited to identifiers and minimum attributes. | M | Not started | Location of HRS personal data: `HRIS-Stery/services/employee-service/migrations/001_create_employee_schema.up.sql` |
 | FR-SUI-SEC.12 | Payment webhook: signature verified, amount matched, repeated notifications idempotent, and invalid notifications answered without leaking keys. | M | Not started | `SELA/apps/api/services/payment/midtrans.go`, `SELA/apps/api/services/payment/postgres.go` |
-
 
 ## 5. Data Model
 
@@ -980,7 +979,7 @@ CREATE POLICY tenant_isolation ON subscriptions
 ### 5.3 Enumerations and statuses
 
 | Entity | Column | Values |
-|---|---|---|
+| --- | --- | --- |
 | `orgs` | `status` | `active`, `suspended`, `deleted` |
 | `org_members` | `org_role` | `org_owner`, `org_admin`, `org_member` |
 | `org_members` | `status` | `active`, `removed` |
@@ -1001,7 +1000,7 @@ Subscription status `grace` represents the payment grace period which is `tbd` (
 ### 5.4 Schema additions in products
 
 | Product | Table or column | Purpose | Mode | FR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | All | `entitlement_snapshots` (`org_id`, `version`, `payload`, `signature`, `fetched_at`) | Signed entitlement snapshot that survives a platform outage | `suite` | FR-SUI-02.6 |
 | All | `outbox` (pattern 2.5.3), `processed_events` (`consumer`, `event_id`, `processed_at`) | Idempotent publishing and consumption | both | FR-SUI-08.6 |
 | HRS, POS | `tenants.org_id uuid NULL` (unique when populated), `tenants.link_status` | Link to the platform org | `suite` | FR-SUI-07.5 |
@@ -1016,7 +1015,7 @@ Link columns are nullable so standalone mode does not change; migrations are add
 Embedded goose migrations, `cmd/migrate up|down`, numbered from `0001`. Planned order (titles `[INFERENCE]`):
 
 | File | Content |
-|---|---|
+| --- | --- |
 | `0001_identity.sql` | `users`, `orgs`, `org_members`, `invitations`, `member_product_access`, `sessions_meta`; application role and RLS |
 | `0002_rbac.sql` | RBAC catalogue and seed of roles/permissions 3.2 |
 | `0003_catalog.sql` | `products`, `features`, `skus`, `sku_items`, `prices` |
@@ -1031,7 +1030,7 @@ Every migration must pass up -> down -> up on a fresh database in CI (FR-SUI-08.
 ### 5.6 Personal data classification
 
 | Data | Location | Class | Protection |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | User and invitation email | `users`, `invitations` | H (encrypted) | `piicrypt` + blind index (FR-SUI-SEC.6) |
 | Display name | `users` | S | RLS does not apply; access only by IAM |
 | Migrated password hash | `users.password_hash` | Credential | Hash imported unchanged (FR-SUI-01.3); never logged |
@@ -1042,6 +1041,7 @@ Every migration must pass up -> down -> up on a fresh database in CI (FR-SUI-08.
 | NIK, NPWP, date of birth, POS transaction data | not on the platform | Not applicable | Replication prohibited (FR-SUI-SEC.11) |
 
 Classes: H = high/encrypted, S = sensitive/restricted, N = non-personal.
+
 ## 6. API Specification
 
 ### 6.1 Conventions
@@ -1054,7 +1054,7 @@ Classes: H = high/encrypted, S = sensitive/restricted, N = non-personal.
 ### 6.2 Platform REST routes
 
 | Method | Path | Permission | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | POST | `/api/v1/auth/otp/request` | public, rate limited | FR-SUI-01.2 |
 | POST | `/api/v1/auth/otp/verify` | public, rate limited | FR-SUI-01.2, FR-SUI-01.4 |
 | POST | `/api/v1/auth/logout` | session | FR-SUI-01.4 |
@@ -1147,7 +1147,7 @@ service DeliveryService {
 ```
 
 | Service | Methods | Caller | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `SessionService` | `Introspect`, `SetAttribute`, `Revoke` | Product | FR-SUI-01.5, FR-SUI-01.6, FR-SUI-01.7, FR-SUI-01.12 |
 | `EntitlementService` | `Check`, `GetSnapshot`, `ReportUsage` | Product | FR-SUI-02.4, FR-SUI-02.5, FR-SUI-02.10 |
 | `IntegrationService` | `Publish` | Product | FR-SUI-07.8 |
@@ -1171,7 +1171,7 @@ All methods return standard gRPC codes (`InvalidArgument`, `Unauthenticated`, `P
 ### 6.5 Error mapping
 
 | Condition | HTTP | Error code | Notes |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | No session | 401 | `unauthorized` | Cookie missing or invalid |
 | No permission | 403 | `forbidden` | Role lacks the permission |
 | Feature not entitled | 403 | `entitlement_required` | Available for upsell in the UI `[INFERENCE]` |
@@ -1210,7 +1210,7 @@ sequenceDiagram
 ```
 
 | Step | Rule | Failure |
-|---|---|---|
+| --- | --- | --- |
 | OTP request | Identical response for known/unknown addresses; rate limiter per address and per connection | 429 `rate_limited` |
 | Verification | 5 wrong attempts lock the address for 15 minutes; code is single-use | 401 without distinguishing the reason |
 | Session issuance | Random token, only the HMAC is stored, cookie `stery_session` | Dragonfly fails: 503, no session |
@@ -1239,7 +1239,7 @@ flowchart TD
 ```
 
 | Situation | Product behaviour | Basis |
-|---|---|---|
+| --- | --- | --- |
 | Platform healthy | `Check` result or fresh snapshot | FR-SUI-02.4 |
 | Platform unreachable, snapshot younger than 24 hours | Use the last snapshot (24-hour limit `tbd`, configurable) | D-SUI-04, FR-SUI-02.7 |
 | Platform unreachable, older snapshot | Paid features denied; basic features and data remain readable | FR-SUI-02.7 |
@@ -1274,7 +1274,7 @@ sequenceDiagram
 ```
 
 | Step | Rule |
-|---|---|
+| --- | --- |
 | Creation | One `open` invoice per subscription; `org_owner` only; price from `prices` (empty until OQ-1 → checkout disabled) |
 | Webhook | Signature must be valid; amount must equal the invoice; repeated notifications do not duplicate |
 | Activation | One database transaction; new-version entitlement and outbox event are written together |
@@ -1302,7 +1302,7 @@ sequenceDiagram
 ```
 
 | Aspect | Rule |
-|---|---|
+| --- | --- |
 | Mapping | Created by an admin (FR-SUI-07.4); without a mapping no action is taken, only audit |
 | Effect | POS access revoked within 30 seconds; local user deactivated idempotently |
 | Reversal | Reactivating the employee does not automatically reactivate the POS user `[INFERENCE]` |
@@ -1333,7 +1333,7 @@ sequenceDiagram
 ```
 
 | Phase | Product behaviour |
-|---|---|
+| --- | --- |
 | `pending` | No change |
 | `confirmed` | Dual-run: native login keeps working; mapping under review |
 | `finalized` | Login only through the platform; unpaired users cannot sign in until mapped |
@@ -1346,7 +1346,7 @@ A mid-way failure (for example `Deliver` not arriving) makes `finalized` wait fo
 ### 8.1 Threat model summary
 
 | Threat | Control | FR |
-|---|---|---|
+| --- | --- | --- |
 | Session hijacking | HttpOnly, Secure, SameSite cookie; only HMAC stored; 30-second revocation | FR-SUI-SEC.1, FR-SUI-SEC.2, FR-SUI-01.7 |
 | Platform as a single point of failure | 24-hour entitlement snapshot, standalone self-sufficient | FR-SUI-02.7, FR-SUI-08.16 |
 | Product calls platform API without rights | HMAC service token, deny-by-default, nonce | FR-SUI-SEC.3, FR-SUI-01.13 |
@@ -1366,7 +1366,6 @@ Email OTP for new users (SELA invariant, FR-SUI-01.2) and password only for impo
 
 ### 8.3 Authorization
 
-
 Org RBAC (3.2) lives in the platform; product roles are managed by the product, but product access assignment is done in the platform (FR-SUI-01.10). Every route is guarded by `RequirePermission`; gRPC is guarded by the service token.
 
 ### 8.4 Tenant isolation
@@ -1376,7 +1375,7 @@ One org = one platform tenant; forced RLS (5.2). Products keep their own tenant 
 ### 8.5 Personal data protection
 
 | Data | Protection | Retention |
-|---|---|---|
+| --- | --- | --- |
 | Email and phone | `piicrypt` AES-256-GCM, per-purpose AAD, blind index | While the account is active; deletion via FR-SUI-SEC.10 |
 | Logs and audit | No raw PII | `tbd` (OQ-F7) |
 | Service tokens and secrets | Env, rotation | Not stored in the database |
@@ -1387,7 +1386,7 @@ One org = one platform tenant; forced RLS (5.2). Products keep their own tenant 
 The platform stores user identity and organisation metadata, so it counts as a controller or processor of personal data under Law No. 27 of 2022 (UU PDP; same normative reference as `SELA/CLAUDE.md`). Mapping of obligations to controls:
 
 | Obligation `[INFERENCE]` | Control |
-|---|---|
+| --- | --- |
 | Processing basis and consent | Consent at registration; final text `tbd` |
 | Right of access and copy | FR-SUI-SEC.10 |
 | Right to correction and deletion | FR-SUI-SEC.10 |
@@ -1411,7 +1410,7 @@ Secrets only in env or the host secret store; service token rotation with a tran
 All quantitative targets not found in a repo are `tbd` (no SLA, quota, or latency target exists in any repo). NFR references come from suite PRD section 6.
 
 | Aspect | Technical specification | Related NFR | Verification |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Session performance | Introspection served from a 30-second cache per token hash; `Introspect` called only on cache miss; p95 latency target `tbd` | NFR-SUI-01 | Unit tests `kit/session` (cache expiry), load test `tbd` |
 | Resilience | Signed entitlement snapshot used for up to 24 hours while the platform is down (configurable, `tbd`); fail closed for paid features afterwards; standalone tenants unaffected | NFR-SUI-02, NFR-SUI-12 | `Entitlement` adapter contract tests; platform-down e2e test |
 | Platform availability | Target `tbd`; platform is not on the critical path of standalone mode; recovery: restore database then Dragonfly (sessions can be recreated via OTP) | NFR-SUI-03 | Recovery drill `tbd` |
@@ -1443,7 +1442,7 @@ The console is new because the platform has no code yet. Product screens (HRS, P
 ### 10.1 Platform console (`stery-suite/apps/web`)
 
 | Screen | Route (target) | Role | Main content | FR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Sign in | `/login` | public | Email, OTP code, controlled errors | FR-SUI-06.2 |
 | Select or create org | `/orgs` | user | Org list, create org | FR-SUI-01.1, FR-SUI-06.4 |
 | Onboarding | `/onboarding` | `org_owner` | Choose SKU, summary, pay, first product | FR-SUI-06.3 |
@@ -1460,7 +1459,7 @@ The console is new because the platform has no code yet. Product screens (HRS, P
 ### 10.2 Screens required on products (suite mode)
 
 | Product screen | Product | Content | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Upsell page (entitlement absent) | HRS, POS, SELA | Explains the feature, button to console `upsell_url` | FR-SUI-02.8 |
 | No product access page | HRS, POS | Member exists but without product access | FR-SUI-01.10 |
 | Suite link settings | HRS, POS, SELA | Enter link code, link status | FR-SUI-07.2 |
@@ -1478,7 +1477,7 @@ Bilingual with parity tests; WIB and IDR; form labels and errors readable by scr
 Status follows the definition in 1.3. Table rows are derived from the section 4 tables; `Sebagian` only for reusable SELA assets.
 
 | Module | FR count | Done | Partial | Not started | Pending Verification | Deferred |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | 4.01 IAM | 14 | 0 | 0 | 14 | 0 | 0 |
 | 4.02 ENT | 12 | 0 | 1 | 11 | 0 | 0 |
 | 4.03 BIL | 12 | 0 | 1 | 11 | 0 | 0 |
@@ -1490,9 +1489,8 @@ Status follows the definition in 1.3. Table rows are derived from the section 4 
 | 4.09 SEC | 12 | 0 | 0 | 12 | 0 | 0 |
 | Total | 102 | 0 | 5 | 97 | 0 | 0 |
 
-
 | ID | Module | Priority | Status | Evidence |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-01.1 | IAM | M | Not started | Reference: `SELA/apps/api/services/auth/service.go` |
 | FR-SUI-01.2 | IAM | M | Not started | Reference: `SELA/apps/api/services/auth/service.go` |
 | FR-SUI-01.3 | IAM | S | Not started | Reference: `HRIS-Stery/services/auth-service/internal/domain/user.go` |
@@ -1599,7 +1597,7 @@ Status follows the definition in 1.3. Table rows are derived from the section 4 
 ### 11.2 BR to FR matrix
 
 | BR | Business requirement (summary) | FRs that implement it |
-|---|---|---|
+| --- | --- | --- |
 | BR-SUI-01 | Standalone products | FR-SUI-08.1, FR-SUI-08.2, FR-SUI-08.16, FR-SUI-02.11 |
 | BR-SUI-02 | Two-product bundle | FR-SUI-02.1, FR-SUI-02.3, FR-SUI-03.2, FR-SUI-03.6 |
 | BR-SUI-03 | `SUITE` bundle one login one bill | FR-SUI-02.1, FR-SUI-02.3, FR-SUI-03.2, FR-SUI-01.14, FR-SUI-01.4 |
@@ -1624,7 +1622,7 @@ Status follows the definition in 1.3. Table rows are derived from the section 4 
 Contradictions found while drafting this FSD. A document that contradicts the code is not repeated as fact; the code wins. SELA documents and `POS-Stery/PRD.md` are not changed by this FSD.
 
 | # | Document claim | Reality | Evidence | Follow-up |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 1 | Owner answer sheet states 56 Pending Verification tasks | Tracker counts 20 Pending Verification of 105 tasks (76 Completed, 9 Not Started), as of 2026-10-25 | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/10-lembar-jawaban-pemilik.md`, `SELA/docs/tracking/tracker.json` | Owner reconciles; S0 gate uses the tracker |
 | 2 | `FSD_Sela.md` states "v2.1" on lines 67, 1351, and 1444 | Document header states v2.55 | `SELA/docs/FSD_Sela.md` | Fix the version reference in SELA |
 | 3 | `PRD_Sela.md` line 208 states BRD v2.1 and the header states FSD v2.54 | BRD is v2.5 and FSD is v2.55 | `SELA/docs/PRD_Sela.md`, `SELA/docs/BRD_Sela.md` | Fix the version reference in SELA |
@@ -1652,7 +1650,7 @@ This document changes no product code or documents. Commercial values (HRS, POS,
 Section 2 of `FSD_HRIS.id.md` and `FSD_POS.id.md` was read while drafting this document (both may still change). Alignment points:
 
 | Topic | Decision in the suite FSD | Reference in the product FSD |
-|---|---|---|
+| --- | --- | --- |
 | Event names | HRS `hrs.<agregat>.<kejadian>` (`hrs.employee.terminated`, `hrs.gathering.scheduled`); POS `sales.sale.completed`, `inventory.low_stock`, `supplier.stock.received`, `customer.created`; platform `platform.<agregat>.<kejadian>` | FSD_HRIS 2.5; FSD_POS 2.5 |
 | Session cookie | `stery_session` in suite mode; standalone cookie name is decided by the product (HRS: `tbd`; POS: POS session cookie) | FSD_HRIS 6; FSD_POS 2.7 |
 | Entitlement snapshot | Dragonfly key `ent:snap:<org>` and product table `entitlement_snapshots` | FSD_HRIS 2.4 |
@@ -1670,7 +1668,7 @@ Sequencing consequence: `kit/port`, `kit/tenantdb`, `kit/outbox`, and `kit/httpx
 Commercial and architectural suite questions (OQ-1 through OQ-10) live in the BRD/analysis and are not repeated. The following questions arose while detailing the FSD and need an owner decision; the default this document uses is in the second column.
 
 | ID | Question | Default used by this document |
-|---|---|---|
+| --- | --- | --- |
 | OQ-F1 | Platform session TTL | Follows SELA (12 hours), `tbd` |
 | OQ-F2 | Location of the `kit/port` package | `kit/port` in the `kit` module `[INFERENCE]` |
 | OQ-F3 | `kit` as a separate Go module and tag scheme | Separate module with tag `kit/vX.Y.Z` `[INFERENCE]` |

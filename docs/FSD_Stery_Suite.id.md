@@ -27,7 +27,7 @@ Dokumen ini adalah spesifikasi fungsional dan teknis platform `stery-suite` dan 
 ### 1.3 Konvensi dokumen
 
 | Konvensi | Arti |
-|---|---|
+| --- | --- |
 | Status | `Selesai`, `Sebagian`, `Belum`, `Pending Verification`, `Ditunda`. Pada dokumen ini `Sebagian` hanya dipakai bila implementasi yang dapat dipakai ulang sudah ada di repo produk (mis. SELA); sisi platform tetap `Belum`. |
 | `Bukti` | Path repo relatif terhadap akar `moon-eye` (awalan `SELA/`, `POS-Stery/`, `HRIS-Stery/`, `stery-suite/`). Kolom ini hanya memuat path yang ada saat ini; jalur target hanya muncul pada tabel delta 2.7 dan struktur repo 2.6. |
 | Prioritas | M = Must, S = Should, C = Could. |
@@ -39,7 +39,7 @@ Dokumen ini adalah spesifikasi fungsional dan teknis platform `stery-suite` dan 
 ### 1.4 Istilah
 
 | Istilah | Definisi |
-|---|---|
+| --- | --- |
 | Organisasi (org) | Entitas pelanggan di platform; pemilik langganan, anggota, dan entitlement. |
 | Tenant | Satuan isolasi data di dalam produk (HRS/POS: tenant; SELA: host). Pada mode suite, tenant produk ditautkan ke satu org. |
 | Mode | `STERY_MODE=standalone` (bawaan) atau `suite`. Mode efektif per tenant dijelaskan di 4.08 (FR-SUI-08.2). |
@@ -57,7 +57,7 @@ Prinsip arsitektur (D-SUI-01): komposisi, bukan konsolidasi. Tiga produk tetap u
 Tabel berikut normatif untuk platform dan menjadi daftar periksa kesesuaian (FR-SUI-08.7) untuk setiap produk. Kolom sumber menunjuk bukti keberadaan standar itu di SELA. Versi dibaca dari `SELA/apps/api/go.mod` (go 1.25.1, pgx v5.11.0, goose v3.26.0, go-redis v9.22.0, grpc v1.84.0) dan `SELA/apps/web/package.json` (Svelte ^5.56.1, Vite ^8.0.16, TypeScript ^6.0.3, Vitest ^4.1.11, SvelteKit ^2.63.0).
 
 | # | Lapisan | Standar | Sumber di SELA |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Tata letak repo | Per produk: `apps/api`, `apps/web`, `deploy/`, `scripts/`, `docs/`, `Makefile`, `CLAUDE.md`, `AGENTS.md` | `SELA/CLAUDE.md` (bagian Layout), `SELA/docs/FSD_Sela.md` (2.6), `SELA/AGENTS.md`, `SELA/Makefile` |
 | 2 | Bahasa | Go >= 1.25.1; satu modul per produk `github.com/<owner>/<product>` (handle pemilik `Briyantama` seperti SELA, belum terverifikasi untuk repo baru, OQ-7) | `SELA/apps/api/go.mod` |
 | 3 | Dekomposisi | Modul = paket Go `services/<nama>` dalam satu proses; inti `Service` + repositori Postgres + adapter HTTP + adapter gRPC opsional; batas lewat antarmuka Go dan kontrak proto agar dapat dipisah kemudian | `SELA/apps/api/services`, `SELA/docs/FSD_Sela.md` (2.6) |
@@ -89,7 +89,7 @@ Catatan penerapan pada platform:
 Platform adalah satu proses Go dengan modul-modul berikut (baris 3 STACK-SPEC). Batas antarmodul adalah antarmuka Go; kontrak yang dipakai produk dipublikasikan sebagai gRPC.
 
 | Modul | Paket (target) | Tanggung jawab | Bergantung pada | Transport |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 01 IAM | `services/iam` | Pengguna, organisasi, anggota, undangan, sesi, RBAC platform, token layanan | Postgres, Dragonfly, NTF | REST, gRPC `SessionService`, `LinkService` |
 | 02 ENT | `services/entitlement` | Katalog produk/SKU, entitlement, snapshot bertanda tangan, penggunaan | Postgres, BIL (event), IAM | REST, gRPC `EntitlementService` |
 | 03 BIL | `services/billing` | Harga, langganan, invoice, `Provider` pembayaran, webhook, pekerjaan perpanjangan/kedaluwarsa | Postgres, ENT, NTF, `Provider` | REST |
@@ -138,7 +138,7 @@ flowchart LR
 ### 2.3 Komponen antarmuka
 
 | Komponen | Pengguna | Protokol | Catatan |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Konsol platform (`apps/web`) | Org owner, org admin, operator | HTTPS, REST `/api/v1`, cookie `stery_session` | SPA SvelteKit (D-SUI-09); layar di bagian 10 |
 | API REST platform | Konsol, Midtrans (webhook) | HTTPS | Amplop `{success,data,error}`; webhook publik, terverifikasi tanda tangan |
 | gRPC platform `stery.platform.v1` | API produk (mesin) | gRPC | Deny-by-default; token HMAC layanan; tidak diekspos ke peramban |
@@ -149,7 +149,6 @@ flowchart LR
 | Midtrans Core API | BIL | HTTPS | QRIS; webhook ke `/api/v1/billing/webhook/midtrans` |
 | Caddy | Semua | HTTPS | Reverse proxy; pola `SELA/deploy/Caddyfile` |
 
-
 ### 2.4 Penggunaan Dragonfly, port Go, kontrak gRPC, dan model data platform
 
 #### 2.4.1 Penggunaan Dragonfly
@@ -157,7 +156,7 @@ flowchart LR
 Platform memakai satu instance Dragonfly sendiri (profil suite: port 6380). Tiap produk tetap memakai instance Dragonfly sendiri (D-SUI-07); kunci SELA tidak berawalan, sehingga produk tidak pernah berbagi instance. Nilai TTL yang tidak tercantum `tbd`.
 
 | Kunci (platform) | Isi | TTL | Pola sumber |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `sess:{hmac}` | Rekaman sesi (`session_id`, `user_id`, `org_id` aktif, atribut per produk); kunci = HMAC token dengan awalan domain `session` | TTL sesi; SELA memakai default 12 jam (`SELA/apps/api/services/auth/service.go`), nilai platform `tbd` (OQ-F1) | `SaveSession` SELA: hanya hash yang disimpan |
 | `usess:{user_id}` | Himpunan `session_id` pengguna, untuk pencabutan semua sesi (FR-SUI-01.7) | Mengikuti sesi terpanjang | baru |
 | `otp:{hmac}` | HMAC kode 6 digit; sekali pakai | 5 menit | `SELA/CLAUDE.md` (invarian Auth) |
@@ -210,7 +209,7 @@ type Events interface {
 ```
 
 | Port | Adapter `standalone` (bawaan) | Adapter `suite` | Aset yang dipakai ulang |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Identity` | Sesi lokal produk: SELA OTP email + cookie `sela_session`; HRS dan POS kata sandi (hash yang ada) + sesi opaque, JWT dihapus (D-SUI-10) | Introspeksi lewat `SessionService/Introspect` dengan cache 30 detik; cookie `stery_session` | `SELA/apps/api/services/auth/service.go` (`Authenticate`), `SELA/apps/api/services/auth/interceptor.go` |
 | `Tenant` | HRS/POS: tenant lokal lewat `kit/tenantdb.WithTenant`; SELA: tanpa tenant (transaksi biasa tanpa GUC) | Org platform dipetakan ke tenant produk (`tenants.org_id`; SELA: `hosts.org_id`), lalu `WithTenant` yang sama | `kit/tenantdb` (baru) |
 | `Entitlement` | Paket lokal: SELA `events.package` -> `plans`; HRS/POS: paket lokal `tbd` | `EntitlementService/Check` + snapshot bertanda tangan (FR-SUI-02.4 sampai FR-SUI-02.7) | `SELA/apps/api/services/payment/postgres.go`, `SELA/apps/api/internal/db/migrations/0011_plans_transactions.sql` |
@@ -223,7 +222,7 @@ type Events interface {
 Semua layanan platform berada di belakang interceptor deny-by-default (pola `NewUnaryHostInterceptor` SELA) yang mensyaratkan token HMAC layanan; tidak ada metode publik. Sketsa pesan ada di 6.3.
 
 | Layanan | Metode | Pemanggil | Fungsi | FR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `stery.platform.v1.SessionService` | `Introspect`, `SetAttribute`, `Revoke` | Produk | Mengubah token sesi menjadi Principal; menetapkan atribut sesi per produk; mencabut sesi | FR-SUI-01.5, FR-SUI-01.12 |
 | `stery.platform.v1.EntitlementService` | `Check`, `GetSnapshot`, `ReportUsage` | Produk | Cek fitur, ambil snapshot bertanda tangan, lapor penggunaan | FR-SUI-02.4, FR-SUI-02.5, FR-SUI-02.10 |
 | `stery.platform.v1.IntegrationService` | `Publish` | Produk | Menerima envelope dari outbox produk | FR-SUI-07.8 |
@@ -237,7 +236,7 @@ Semua layanan platform berada di belakang interceptor deny-by-default (pola `New
 Database `stery_platform`, peran aplikasi `stery_platform` (NOBYPASSRLS), peran migrasi terpisah. Kelas PII: T = tinggi (enkripsi `piicrypt`), S = sedang, N = tidak ada. Tenant pada platform = org: kebijakan RLS memakai `current_setting('app.tenant_id', true)::uuid` yang berisi `org_id`. Detail kolom, kebijakan, dan diagram ada di bagian 5.
 
 | Tabel | Isi | Kolom kunci | RLS | PII |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `users` | Identitas pengguna lintas org | `user_id`, `email_ciphertext`, `email_blind_index`, `name`, `password_hash` (nullable), `status` | Tidak (lintas org); hanya modul IAM yang mengaksesnya | T (email), S (nama), kredensial |
 | `orgs` | Organisasi | `org_id`, `name`, `status`, `created_by` | Ya (`org_id` = tenant atau anggota) | N |
 | `org_members` | Keanggotaan | `member_id`, `org_id`, `user_id`, `org_role`, `status` | Ya | N |
@@ -332,14 +331,14 @@ Klaim: `WITH due AS (SELECT event_id FROM outbox WHERE status = 'pending' AND ne
 Profil suite menjalankan platform dan tiga produk pada satu host pengembangan/staging tanpa tabrakan port (BR-SUI-18). Profil standalone setiap produk tidak berubah.
 
 | Layanan | API | gRPC | Web | Catatan |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Platform | 8180 | 9190 | 5273 | gRPC tidak dibuka ke publik |
 | HRIS (`HRS`) | 8280 | 9290 | 5373 | |
 | POS (`POS`) | 8380 | 9390 | 5473 | Satu `apps/web` (D-SUI-09) |
 | SELA (`SEL`) | 8080 | 9090 | 5173 | Tidak berubah |
 
 | Sumber daya bersama | Port | Isi |
-|---|---|---|
+| --- | --- | --- |
 | PostgreSQL 18 | 5432 | Empat basis data: `stery_platform`, `hris`, `pos`, `sela`; satu peran aplikasi per basis data (`stery_platform`, `hris`, `pos`, `sela`); satu peran migrasi terpisah per basis data (nama `tbd`) |
 | Dragonfly | 6379 SELA, 6380 platform, 6381 HRIS, 6382 POS | Satu instance per produk (D-SUI-07) |
 | RustFS | 9000 (S3), 9001 (konsol) | Satu bucket dan satu access key per produk; SELA `sela-media` (bawaan `S3_BUCKET` pada `SELA/deploy/docker-compose.yml`), nama bucket lain `tbd` |
@@ -349,7 +348,7 @@ Profil suite menjalankan platform dan tiga produk pada satu host pengembangan/st
 Port standalone saat ini (bukti dibaca dari `.env.example`) dan tabrakannya:
 
 | Produk | Port saat ini | Bukti |
-|---|---|---|
+| --- | --- | --- |
 | SELA | API 8080, gRPC 9090, web 5173; e2e memakai 8081, 9091, 5174, 5175; Postgres lokal 5432; Dragonfly 6379; RustFS 9000/9001; ClamAV 3310 | `SELA/CLAUDE.md`, `SELA/deploy/docker-compose.yml` |
 | POS | Gateway `HTTP_PORT=8000`; gRPC 8081 sampai 8086; admin 5173, kasir 5174; Postgres 5432; Redis 6379; NATS 4222; OTLP 4318 (komentar menyebut 4317 untuk gRPC) | `POS-Stery/.env.example` |
 | HRIS | Postgres 5432; Redis 6379; NATS 4222; OTLP 4317; port gRPC per layanan lewat `GRPC_PORT` | `HRIS-Stery/.env.example` |
@@ -383,7 +382,7 @@ Konsekuensi: `apps/api/go.mod` (platform) dan `kit/go.mod` adalah dua modul dala
 #### 2.6.2 Sumber paket `kit`
 
 | Paket `kit` | Sumber di SELA | Perubahan saat diangkat | Usaha `[INFERENCE]` |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `kit/httpx` | `SELA/apps/api/internal/httpx` (`response.go`, `decode.go`, `proxy.go`) | Hanya pindah paket | S |
 | `kit/config` | `SELA/apps/api/internal/config/config.go` | Struct konfigurasi SELA bersifat khusus produk; yang diangkat hanya pembaca env gagal-cepat, penyunting rahasia, dan parser (mis. proksi tepercaya) | M |
 | `kit/db` | `SELA/apps/api/internal/db/migrate.go` | Migrasi dijadikan parameter (`embed.FS`) agar tiap produk membawa migrasinya | M |
@@ -419,7 +418,7 @@ Urutan mengikuti D-SUI-12; satu penyelarasan berjalan pada satu waktu; setiap pe
 Kolom "kondisi saat ini" menunjuk bukti keberadaan (path ada); kolom "tujuan" memakai nama paket target. Usaha S/M/L adalah `[INFERENCE]` dan konsisten dengan analisis bagian 6.
 
 | As-is -> to-be | Modul terdampak | Reuse (domain dan application dipertahankan, infrastruktur dan antarmuka ditulis ulang) | Usaha |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | SELA: `internal/{httpx,config,db,testdb,audit,piicrypt,objstore,health}` -> `stery-suite/kit/*` diimpor kembali (S1) | Semua modul SELA | Seluruh paket sebagai sumber; `SELA/apps/api/internal` | M |
 | SELA: `services/auth`, `services/payment`, `internal/audit` -> adapter `standalone` untuk `Identity`, `Entitlement`, `Audit` (S1/S4) | 01 IAM, 02 ENT, 05 AUD di sisi SELA | `SELA/apps/api/services/auth/service.go`, `SELA/apps/api/services/payment/provider.go` | M |
 | SELA: tabel `hosts` -> kolom nullable `org_id`, `external_subject` pada mode suite (S4) | 01 IAM, 07 INT | `SELA/apps/api/internal/db/migrations/0001_hosts.sql` | S |
@@ -448,7 +447,7 @@ Bagian 2 kedua FSD itu ditulis paralel dengan dokumen ini. Catatan keselarasan (
 ### 3.1 Aktor
 
 | Aktor | Deskripsi | Cara masuk |
-|---|---|---|
+| --- | --- | --- |
 | Pemilik organisasi (`org_owner`) | Membeli paket dan bertanggung jawab atas tagihan; satu atau lebih per org | Konsol; OTP email |
 | Admin organisasi (`org_admin`) | Mengelola anggota, akses produk, integrasi, tautan | Konsol |
 | Anggota / pengguna produk (`org_member`) | Karyawan, kasir, atau host yang memakai HRS, POS, atau SELA | Produk lewat cookie `stery_session` |
@@ -465,7 +464,7 @@ Bagian 2 kedua FSD itu ditulis paralel dengan dokumen ini. Catatan keselarasan (
 Peran dan kode izin di bawah adalah usulan awal `[INFERENCE]` yang mengikuti pola izin `resource:action` SELA (`SELA/apps/api/internal/db/migrations/0004_rbac_foundation.sql`). SELA sendiri hanya menyemai peran `host` dan sedikit izin; seed platform didefinisikan di sini dan tertuang dalam migrasi pertama platform. Izin yang tidak terdaftar ditolak (deny-by-default).
 
 | Izin | `org_owner` | `org_admin` | `org_member` | `platform_operator` |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `orgs:read` | ya | ya | ya | ya (semua org) |
 | `orgs:update` | ya | - | - | - |
 | `members:read`, `members:update`, `members:delete` | ya | ya | - | - |
@@ -493,7 +492,7 @@ Peran dan kode izin di bawah adalah usulan awal `[INFERENCE]` yang mengikuti pol
 ### 3.4 Titik penegakan
 
 | Lapisan | Mekanisme | FR |
-|---|---|---|
+| --- | --- | --- |
 | gRPC platform | Interceptor deny-by-default + token HMAC layanan | FR-SUI-01.13 |
 | REST platform | `RequirePermission(code)` + sesi `stery_session` | FR-SUI-01.11 |
 | Basis data platform | RLS `ENABLE`+`FORCE`, `USING`+`WITH CHECK` | FR-SUI-SEC.5 |
@@ -502,7 +501,7 @@ Peran dan kode izin di bawah adalah usulan awal `[INFERENCE]` yang mengikuti pol
 ### 3.5 Perbedaan per mode
 
 | Aspek | `standalone` | `suite` (tenant tertaut) |
-|---|---|---|
+| --- | --- | --- |
 | Login | Pengguna dan sesi produk | Login platform; produk memanggil `Introspect` |
 | Peran | Peran lokal produk | Peran produk ditetapkan di platform (`member_product_access`) |
 | Entitlement | Paket lokal | Snapshot platform |
@@ -517,7 +516,7 @@ Seluruh FR berstatus `Belum` pada sisi platform; `Sebagian` berarti hanya aset r
 Modul IAM menerbitkan dan memvalidasi sesi suite, mengelola pengguna, organisasi, anggota, undangan, dan RBAC platform. SELA tidak punya konsep organisasi atau identitas eksternal (`SELA/apps/api/services/auth/service.go`, `SELA/apps/api/internal/db/migrations/0001_hosts.sql`); HRS dan POS memakai kata sandi dan JWT.
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-01.1 | Pendaftaran pengguna dan pembuatan organisasi: pengguna terverifikasi membuat org baru dan menjadi `org_owner`; satu pengguna dapat menjadi anggota banyak org. Aturan nama/slug unik `tbd`. | M | Belum | Belum ada kode platform; SELA hanya membuat host saat OTP pertama: `SELA/apps/api/services/auth/service.go` |
 | FR-SUI-01.2 | Login OTP email platform mengikuti invarian SELA: kode 6 digit, hanya HMAC disimpan, TTL 5 menit, sekali pakai, 5 salah mengunci alamat 15 menit, respons permintaan identik untuk alamat dikenal dan tidak dikenal, pembatas laju per alamat dan per koneksi. | M | Belum | Acuan implementasi: `SELA/apps/api/services/auth/service.go`, `SELA/apps/api/services/auth/limiter.go`, `SELA/CLAUDE.md` |
 | FR-SUI-01.3 | Login kata sandi untuk pengguna yang dimigrasi dari HRS/POS: hash bcrypt diimpor saat finalisasi tautan dan diverifikasi tanpa mengubah hash (D-SUI-10); pengguna dapat beralih ke OTP. Kebijakan kata sandi baru `tbd` (OQ-F4). | S | Belum | Login lama: `HRIS-Stery/services/auth-service/internal/domain/user.go`, `POS-Stery/services/auth-service/internal/application/commands/login.go` |
@@ -554,7 +553,7 @@ stateDiagram-v2
 ```
 
 | Objek | Status | Transisi |
-|---|---|---|
+| --- | --- | --- |
 | Undangan | `pending` -> `accepted`, `expired`, `revoked` | Diterima sekali; kedaluwarsa oleh waktu; dicabut admin |
 | Anggota | `active` -> `suspended` -> `removed` | Admin; `removed` mencabut sesi dan akses produk |
 | Org | `active` -> `suspended` | Operator; sesi org ditangguhkan dicabut |
@@ -572,7 +571,7 @@ Modul ENT menyimpan katalog produk, SKU, fitur, dan dimensi batas sebagai data; 
 Nilai dimensi SELA di katalog berasal dari `plans` (verifikasi: `0011_plans_transactions.sql` dengan retensi diperbarui oleh `0015_plan_retention_policy.sql`): Gratis guest_cap 30, retensi 7 hari, watermark ya; Hemat 80 dan 30 hari; Standar 200 dan 365 hari, video dan `zip_full_resolution` ya; Premium tanpa batas tamu dan 730 hari; Partner tanpa batas tamu dan retensi tidak pernah. Nilai awal 0011 (retensi 3/14/30/365) sudah digantikan oleh 0015 (11.3).
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-02.1 | Katalog sebagai data: tabel `products`, `features` (jenis `flag` atau `limit`), `skus`, `sku_items`; SKU `HRS`, `POS`, `SEL`, `HRS+POS`, `HRS+SEL`, `POS+SEL`, `SUITE`; dimensi `hrs.employees.max`, `pos.stores.max`, `pos.devices.max`, `sel.guest_cap`, `sel.retention_days`, `sel.watermark`, `sel.video`, `sel.zip_full_resolution`. SKU tanpa harga tidak dapat dibeli (pola SELA). Nilai HRS/POS `tbd`. | M | Belum | Acuan katalog sebagai data: `SELA/apps/api/internal/db/migrations/0011_plans_transactions.sql` |
 | FR-SUI-02.2 | Gerbang stabilisasi per produk: `products.gate_status`; SKU yang memuat produk dengan gerbang belum tertutup tidak dapat ditandai `sellable` dan tidak dapat dibeli; penutupan gerbang dicatat operator dengan audit (BR-SUI-15). | M | Belum | Daftar gerbang: `stery-suite/docs/00_Analisis_Dampak_Risiko.id.md` |
 | FR-SUI-02.3 | Penurunan entitlement: pada langganan `active`, baris `entitlements` per org, produk, fitur diturunkan dari `sku_items`; bundel adalah gabungan produknya; versi org naik (`entitlement_versions`). | M | Belum | Belum ada kode; SELA menaikkan paket per event dengan `UPDATE events ... FROM plans`: `SELA/apps/api/services/payment/postgres.go` |
@@ -597,7 +596,7 @@ Nilai dimensi SELA di katalog berasal dari `plans` (verifikasi: `0011_plans_tran
 **Mesin status (keputusan degrade).**
 
 | Kondisi snapshot | Platform | Hasil `Allows` fitur berbayar |
-|---|---|---|
+| --- | --- | --- |
 | Segar (versi terkini) | Terjangkau | Sesuai snapshot |
 | Lama tetapi dalam masa tenggang | Tak terjangkau | Sesuai snapshot terakhir |
 | Lewat masa tenggang | Tak terjangkau | `false` (gagal-tertutup); fitur dasar tetap |
@@ -615,7 +614,7 @@ Nilai dimensi SELA di katalog berasal dari `plans` (verifikasi: `0011_plans_tran
 Modul BIL menagih langganan suite (HRS, POS, bundel) lewat Midtrans QRIS dengan abstraksi `Provider` SELA (D-SUI-05). Checkout per-event SELA tidak melewati modul ini. Provider `sandbox` dan `midtrans` sudah ada di SELA; Midtrans sudah diuji ke sandbox sungguhan (tagihan QRIS, tanda tangan SHA512, kedaluwarsa, pembayaran simulator) tetapi webhook masuk pada URL publik belum terbukti (`SELA/docs/aidlc/intents/261014-closed-beta-readiness/10-lembar-jawaban-pemilik.md`, T29.1 Pending Verification); ini bagian gerbang S0 dan prasyarat penagihan produksi suite (RISK-SUI-14). Xendit sudah dihapus (14 Oktober 2026).
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-03.1 | Harga sebagai data: tabel `prices(sku_code, billing_cycle, amount_idr, valid_from)` diisi operator; tidak ada harga di kode; seluruh harga HRS, POS, dan bundel `tbd` (OQ-1) sehingga tabel kosong dan checkout menolak SKU tanpa harga. | M | Belum | Acuan "paket tanpa harga tidak dapat dibeli": `SELA/apps/api/services/payment/service.go`, `SELA/.env.example` |
 | FR-SUI-03.2 | Checkout langganan: org memilih SKU dan siklus -> platform membuat `subscriptions` (`pending`) dan `invoices` (`open`) dan memanggil `Provider.CreateCharge`; satu invoice `open` per langganan (indeks unik parsial); hanya `org_owner`. | M | Belum | Acuan tabel dan indeks: `SELA/apps/api/internal/db/migrations/0011_plans_transactions.sql` (`transactions_one_pending_per_event`) |
 | FR-SUI-03.3 | Abstraksi `Provider` identik dengan SELA (`Name`, `CreateCharge`, `ParseNotification`; tipe `Charge`, `ChargeResult`, `Notification`) dengan adapter `midtrans` dan `sandbox`; `PAYMENT_PROVIDER` kosong membuat checkout menjawab 503. Salinan atau ekstraksi ke `kit/payment` adalah keputusan terbuka (OQ-F5). | M | Sebagian | `SELA/apps/api/services/payment/provider.go`, `SELA/apps/api/services/payment/midtrans.go` |
@@ -652,7 +651,7 @@ stateDiagram-v2
 ```
 
 | Invoice | Transisi |
-|---|---|
+| --- | --- |
 | `open` -> `paid` | Notifikasi sah, jumlah cocok |
 | `open` -> `expired` | `expires_at` lewat (pekerja) atau notifikasi `expire` |
 | `open` -> `failed` atau `cancelled` | Notifikasi provider |
@@ -669,7 +668,7 @@ stateDiagram-v2
 Modul NTF mengirim email platform (OTP, undangan, invoice) dan menerima pesan dari produk mode suite. Pola tersedia di SELA: outbox `notifications` dengan `UNIQUE (event_id, kind)`, penerima tidak disimpan, sewa `next_attempt_at`, klaim `FOR UPDATE SKIP LOCKED` (`SELA/apps/api/internal/db/migrations/0008_notifications.sql`, `SELA/apps/api/services/event/postgres.go`) dan preferensi opt-out per jenis (`SELA/apps/api/internal/db/migrations/0028_notification_prefs.sql`). Kanal in-app, WhatsApp, dan notifikasi untuk tamu bukan lingkup.
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-04.1 | Outbox notifikasi hub: tabel `notifications` (`kind`, `org_id`, `user_id`, `dedupe_key` unik per `(org_id, kind)`, `payload_ciphertext` tersegel, `status`, `attempts`, `next_attempt_at`); alamat tujuan tidak disimpan di outbox, dibaca saat kirim dari `users`. | M | Belum | Acuan: `SELA/apps/api/internal/db/migrations/0008_notifications.sql` |
 | FR-SUI-04.2 | Pekerja ticker dalam proses mengklaim baris dengan sewa dan `FOR UPDATE SKIP LOCKED`, mengirim lewat SMTP di luar transaksi basis data, mencatat percobaan dan galat; backoff berganda; batas percobaan dan interval `tbd`; baris di atas batas menjadi `failed`. | M | Belum | Acuan: `SELA/apps/api/services/event/postgres.go`, `SELA/apps/api/services/auth/smtp.go` |
 | FR-SUI-04.3 | Email platform dalam Indonesia dan Inggris: kode OTP, undangan anggota, invoice dibuat, invoice lunas, peringatan kedaluwarsa langganan. Bahasa mengikuti preferensi pengguna. | M | Belum | Acuan pengirim SMTP dan preferensi bahasa: `SELA/apps/api/services/auth/smtp.go` |
@@ -694,7 +693,7 @@ Modul NTF mengirim email platform (OTP, undangan, invoice) dan menerima pesan da
 Modul AUD menyimpan jejak audit platform dan menjadi sink audit untuk produk mode suite. Audit lokal per produk tetap ada pada kedua mode. Pola yang dipakai ulang: tabel `audit_logs` append-only dengan trigger yang menolak `UPDATE`, `DELETE`, dan `TRUNCATE` (`SELA/apps/api/internal/db/migrations/0014_pii_encryption_audit.sql`), `audit.Logger` dengan `Sanitize`, middleware HTTP, dan pembaca (`SELA/apps/api/internal/audit/audit.go`, `SELA/apps/api/internal/audit/http.go`, `SELA/apps/api/internal/audit/reader.go`).
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-05.1 | `audit_logs` platform append-only: kolom `audit_id`, `occurred_at`, `action`, `outcome` (`success`/`failure`/`denied`), `actor_type`, `actor_id`, `org_id`, `product_code`, `event_id`, `subject_type`, `subject_id`, `client_hash`, `details` (objek JSON); trigger menolak `UPDATE`/`DELETE`/`TRUNCATE`; `event_id` unik parsial untuk idempotensi sink. | M | Belum | Acuan skema dan trigger: `SELA/apps/api/internal/db/migrations/0014_pii_encryption_audit.sql` |
 | FR-SUI-05.2 | Peristiwa platform yang dicatat: login, logout, pencabutan sesi, pembuatan org, perubahan anggota dan peran, undangan, checkout, invoice, perubahan langganan dan entitlement, tautan dan finalisasi, penutupan gerbang produk, tindakan operator. Rincian tidak pernah memuat token, kode OTP, atau email/telepon mentah; alamat klien hanya hash berkunci. | M | Belum | Acuan `Sanitize` dan middleware: `SELA/apps/api/internal/audit/audit.go`, `SELA/apps/api/internal/audit/http.go` |
 | FR-SUI-05.3 | `AuditService/Record`: menerima batch peristiwa produk (`product_code`, `org_id`, aktor, aksi, hasil, `event_id`); idempoten per `event_id`; produk tidak dapat menulis atas nama produk atau org lain (diperiksa terhadap token layanan dan tautan org). | S | Belum | Belum ada kode platform |
@@ -719,7 +718,7 @@ Modul AUD menyimpan jejak audit platform dan menjadi sink audit untuk produk mod
 Konsol adalah `stery-suite/apps/web`, SPA SvelteKit dengan konvensi SELA (STACK-SPEC baris 15): `ssr=false`, `adapter-static`, `apiFetch` dengan `credentials: 'include'`, cermin amplop, katalog i18n `{id,en}` dengan tes paritas. Daftar layar ada di bagian 10.
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-06.1 | Konvensi web konsol: SvelteKit 2, Svelte 5, Vite 8, TypeScript 6, `ssr=false`, `adapter-static`, npm, Node >= 20.19; satu-satunya pemanggil API adalah `apiFetch` (path relatif, 15 detik, `ApiError`); `?next=` hanya lewat `safeNextPath`. | M | Belum | Acuan: `SELA/apps/web/package.json`, `SELA/apps/web/src/lib/api/client.ts`, `SELA/apps/web/src/lib/api/envelope.ts` |
 | FR-SUI-06.2 | Layar masuk: permintaan OTP, verifikasi 6 digit, galat tanpa membocorkan alamat dikenal atau tidak, logout; pengguna tanpa org diarahkan ke pembuatan org. | M | Belum | Acuan alur masuk host: `SELA/apps/web/src/lib/api/auth.ts` |
 | FR-SUI-06.3 | Wizard onboarding org: buat org, pilih SKU (`HRS`, `POS`, `SEL`, `HRS+POS`, `HRS+SEL`, `POS+SEL`, `SUITE`), tinjau ringkasan harga (`tbd` bila belum ada), bayar QRIS, lalu lanjut ke produk pertama (PRD 5.1). | M | Belum | Acuan pemilih paket dan halaman bayar: `SELA/apps/web/src/lib/api/payments.ts` |
@@ -748,7 +747,7 @@ Modul INT memiliki dua bagian yang wajib dipisahkan: (A) tautan org-tenant, yang
 **A. Tautan org-tenant.**
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-07.1 | `integration_links`: satu tautan per `(org_id, product_code)`; kolom `kind` (`provision` untuk org baru, `migrate` untuk pelanggan standalone), `tenant_ref` (id tenant/host produk), `status` (`pending`, `confirmed`, `finalized`, `unlinked`); data produk tidak pernah dipindah antar basis data. | M | Belum | Belum ada kode platform |
 | FR-SUI-07.2 | Tautan `migrate`: org admin membuat tautan di konsol, platform menampilkan kode tautan sekali pakai (hanya HMAC disimpan); admin tenant standalone memasukkan kode di pengaturan produk; produk memanggil `LinkService/Confirm(link_code, product_code, tenant_ref, local_users[])` dengan token layanan; tautan menjadi `confirmed`. Produk standalone yang sudah dijalankan tidak berubah sampai finalisasi (dual-run). | M | Belum | Acuan token tautan berhash tampil sekali: `SELA/apps/api/internal/db/migrations/0012_hof_share_links.sql` |
 | FR-SUI-07.3 | Tautan `provision`: saat entitlement produk pertama kali aktif untuk org tanpa tautan, platform membuat tautan `pending` dan mengirim `platform.tenant.provision_requested` (`link_id`, `org_id`, nama org, pemilik) lewat `Deliver`; produk membuat tenant secara idempoten per `org_id` dengan konfigurasi awal, menyetel `tenants.org_id`, lalu memanggil `LinkService/Confirm`; tautan langsung `finalized` karena tidak ada pengguna lokal. | M | Belum | Perilaku pemasangan tenant pada mode `suite` oleh platform dinyatakan di `POS-Stery/docs/BRD_POS.id.md` (BR-POS-21) |
@@ -760,7 +759,7 @@ Modul INT memiliki dua bagian yang wajib dipisahkan: (A) tautan org-tenant, yang
 **B. Event lintas produk.**
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-07.8 | `IntegrationService/Publish`: menerima batch envelope dari outbox produk; menolak envelope tidak valid (`event_id` bukan UUIDv7, `org_id` tak tertaut ke produk pemanggil, `event_type` tidak ada di `events_published` manifest); idempoten per `event_id`. | S | Belum | Acuan relay outbox: `SELA/apps/api/services/instant/jobs.go` |
 | FR-SUI-07.9 | Perutean dan opt-in: platform menulis `deliveries` hanya bila org berentitlement `integration.<a>_<b>` dan admin mengaktifkan `integration_subscriptions` untuk pasangan produk dan jenis event; event kontrol platform (`platform.tenant.provision_requested`, `platform.link.finalized`, `platform.entitlement.changed`) selalu dikirim ke produk org itu. | S | Belum | Belum ada kode platform |
 | FR-SUI-07.10 | `DeliveryService/Deliver` di produk: at-least-once; konsumen wajib idempoten lewat `processed_events` per `(consumer, event_id)`; galat sementara menghasilkan nack sehingga dicoba ulang; tenant tujuan dipetakan dari `org_id`. | S | Belum | Acuan klaim dan sewa: `SELA/apps/api/services/event/postgres.go` |
@@ -772,7 +771,7 @@ Modul INT memiliki dua bagian yang wajib dipisahkan: (A) tautan org-tenant, yang
 Ketiganya Could (C). Syarat bersama: bukti permintaan pelanggan (OQ-9), S4 selesai, org berentitlement `integration.<a>_<b>`, admin mengaktifkan opt-in, dan tinjauan UU PDP atas data yang berpindah (hanya identifikator dan metadata minimum; tidak pernah NIK, NPWP, atau tanggal lahir).
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-07.13 | INT-1, tautan staf HRS <-> POS (fitur `integration.hrs_pos`): `hrs.employee.terminated` dari HRS diperkaya platform dengan pemetaan `user_product_links` (`external_ref` pengguna POS) dan menonaktifkan pengguna POS: platform mencabut akses produk POS anggota itu (efektif setelah cache 30 detik) dan mengirim event ke POS untuk menonaktifkan rekaman pengguna lokal. Pemetaan karyawan <-> pengguna POS dibuat admin (bukan otomatis). | C | Belum | Peristiwa as-is `hris.workforce.employee.terminated`: `HRIS-Stery/services/employee-service/internal/infrastructure/nats_publisher.go` |
 | FR-SUI-07.14 | INT-2, gathering HRS membuat acara SELA (fitur `integration.hrs_sel`): `hrs.gathering.scheduled` (hipotesis di FSD_HRIS 2.5; HRS belum punya konsep gathering sehingga sumber event `tbd`) menyebabkan SELA membuat acara draf berkategori `gathering` untuk host yang dipetakan ke aktor di org itu; arah satu jalur. | C | Belum | Peristiwa hipotesis: `HRIS-Stery/docs/FSD_HRIS.id.md` (2.5); kategori acara SELA: `SELA/apps/api/internal/db/migrations/0002_event_categories.sql` |
 | FR-SUI-07.15 | INT-3, acara toko POS membuat acara SELA dan mengundang pelanggan loyalitas yang opt-in (fitur `integration.pos_sel`): POS belum memiliki konsep acara toko maupun persetujuan pelanggan (nama event `tbd`, FSD_POS); undangan hanya untuk pelanggan dengan persetujuan tercatat; pengiriman lewat notification hub. | C | Belum | Pelanggan dan loyalitas POS: `POS-Stery/services/customer-service/internal/application/commands/add_loyalty_points.go`; BR-POS-20 pada `POS-Stery/docs/BRD_POS.id.md` |
@@ -799,7 +798,7 @@ stateDiagram-v2
 ```
 
 | Delivery | Transisi |
-|---|---|
+| --- | --- |
 | `pending` -> `sent` | `Deliver` sukses (ack) |
 | `pending` -> `pending` | galat sementara; `attempts` naik; `next_attempt_at` mundur |
 | `pending` -> `dead` | melewati batas percobaan; operator dapat mengulang |
@@ -815,7 +814,7 @@ stateDiagram-v2
 Modul DEP mengatur mode operasi, profil deploy, dan kontrak yang harus dipenuhi sebuah produk untuk bergabung (BR-SUI-06, BR-SUI-18). SELA hari ini sudah memenuhi hampir seluruh butir kontrak karena kontrak diturunkan dari SELA; HRS dan POS memenuhinya melalui penyelarasan S2 dan S3.
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-08.1 | `STERY_MODE=standalone` (bawaan) atau `suite`, divalidasi gagal-cepat saat start; nilai lain ditolak; `suite` mensyaratkan `STERY_PRODUCT_CODE`, `PLATFORM_GRPC_ADDR`, `STERY_SERVICE_SECRET`, dan kunci publik snapshot; rahasia tidak pernah dicetak. Nama variabel adalah usulan `[INFERENCE]` kecuali `STERY_MODE`. | M | Belum | Acuan validasi env gagal-cepat: `SELA/apps/api/internal/config/config.go`, `SELA/.env.example` |
 | FR-SUI-08.2 | Mode efektif per tenant: pada deployment `suite`, tenant yang tertaut (`org_id` terisi) memakai adapter `suite`; tenant tidak tertaut tetap memakai adapter `standalone` (SELA: `hosts.org_id` NULL); pada deployment `standalone` platform tidak pernah dipanggil. Kegagalan platform tidak pernah memengaruhi tenant tidak tertaut. Pemilihan adapter dilakukan sekali per permintaan oleh adapter perutean. | M | Belum | Penjelasan keputusan di 7.2; kolom `hosts.org_id` nullable pada D-SUI-08 |
 | FR-SUI-08.3 | Enam port (`Identity`, `Tenant`, `Entitlement`, `Notification`, `Audit`, `Events`) dengan dua adapter masing-masing, ditulis terhadap `kit/port` (2.4.2) dan lolos paket tes kontrak `kit/contract` yang sama untuk kedua adapter. Port diperkenalkan pada S2 (POS) dengan adapter lokal, sebelum S4 (FSD_POS 2.7). | M | Belum | Aset acuan adapter lokal SELA: `SELA/apps/api/services/auth/service.go`, `SELA/apps/api/internal/audit/audit.go` |
@@ -861,7 +860,7 @@ Aturan nama: kode produk huruf besar (`HRS`, `POS`, `SEL`); kunci fitur huruf ke
 **Syarat Product Contract.** Produk baru bergabung bila seluruh baris berikut terpenuhi (PRD 10.2).
 
 | # | Syarat | Verifikasi | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Manifest valid | Impor manifest oleh operator berhasil; skema divalidasi | FR-SUI-08.4 |
 | 2 | Enam port dengan dua adapter | Tes kontrak `kit/contract` hijau untuk kedua adapter | FR-SUI-08.3 |
 | 3 | `STERY_MODE` | Start gagal pada nilai tidak sah; bawaan `standalone` | FR-SUI-08.1, FR-SUI-08.2 |
@@ -873,7 +872,7 @@ Aturan nama: kode produk huruf besar (`HRS`, `POS`, `SEL`); kunci fitur huruf ke
 **Daftar periksa kesesuaian STACK-SPEC.** Kolom "kesesuaian saat ini" memuat catatan baris produk; evidensi untuk HRS dan POS berasal dari analisis 3.2 dan 3.3 dan FSD masing-masing.
 
 | # | Butir | Cara verifikasi | SELA | POS | HRS |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | 1 | Tata letak repo | Berkas `apps/api`, `apps/web`, `deploy`, `scripts`, `docs`, `Makefile`, `CLAUDE.md`, `AGENTS.md` ada | Selesai | Belum (`apps/admin`, `apps/cashier`, `services/*-service`) | Belum (`apps/web`, `apps/api-gateway`, `services/*-service`) |
 | 2 | Go >= 1.25.1, satu modul | `go.mod` | Selesai | Belum (modul per layanan) | Belum (modul per layanan) |
 | 3 | Dekomposisi paket | `services/<nama>` dalam satu proses | Selesai | Belum | Belum |
@@ -910,7 +909,7 @@ Bukti baris tabel di atas: SELA `SELA/apps/api/go.mod`, `SELA/scripts/check.sh`,
 FR keamanan berlaku untuk platform dan menjadi syarat adapter `suite` di produk. Penjelasan ancaman dan UU PDP ada di bagian 8.
 
 | ID | Requirement | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-SEC.1 | Cookie `stery_session`: HttpOnly, Secure (kecuali pengembangan lokal `COOKIE_SECURE=false`), SameSite=Lax, Path `/`, Domain sesuai OQ-3; kedaluwarsa mengikuti TTL sesi; dibersihkan saat logout. | M | Belum | Acuan: `SELA/apps/api/services/auth/http.go` |
 | FR-SUI-SEC.2 | Tanpa JWT dan tanpa token di `localStorage` atau JSON; sesi hanya cookie HttpOnly; Dragonfly hanya menyimpan HMAC; log dan audit tidak pernah memuat token. | M | Belum | Acuan: `SELA/apps/api/services/auth/service.go`; kondisi JWT di HRS/POS: `HRIS-Stery/apps/web/src/lib/stores/auth.ts`, `POS-Stery/services/auth-service/internal/application/commands/login.go` |
 | FR-SUI-SEC.3 | Token layanan HMAC antar produk dan platform: `product_code`, waktu, nonce, tanda tangan; toleransi jam `tbd`; perlindungan replay lewat `svcnonce`; rahasia per produk dengan rotasi (rahasia sebelumnya diterima selama masa peralihan); perbandingan waktu-konstan. | M | Belum | Acuan HMAC berkunci dan rotasi: `SELA/apps/api/internal/piicrypt/piicrypt.go`, `SELA/apps/api/services/auth/service.go` |
@@ -923,7 +922,6 @@ FR keamanan berlaku untuk platform dan menjadi syarat adapter `suite` di produk.
 | FR-SUI-SEC.10 | Hak subjek data UU PDP: pengguna dapat meminta salinan dan penghapusan atau anonimisasi data identitasnya; penghapusan platform meng-anonimkan `users` dan mengaitkan audit dengan pseudonim, tanpa menghapus catatan tagihan yang wajib disimpan; kebijakan retensi dan peran DPO `tbd`. | S | Belum | Acuan penghapusan berdasar retensi: `SELA/apps/api/services/media/retention.go` |
 | FR-SUI-SEC.11 | Minimasi data lintas produk: platform hanya menyimpan identitas dan metadata organisasi; NIK, NPWP, tanggal lahir, dan data transaksi POS tidak pernah direplikasi ke platform atau ke produk lain; payload event dibatasi pada identifikator dan atribut minimum. | M | Belum | Letak data pribadi HRS: `HRIS-Stery/services/employee-service/migrations/001_create_employee_schema.up.sql` |
 | FR-SUI-SEC.12 | Webhook pembayaran: tanda tangan diverifikasi, jumlah dicocokkan, notifikasi ulang idempoten, dan notifikasi tak sah dijawab tanpa membocorkan kunci. | M | Belum | `SELA/apps/api/services/payment/midtrans.go`, `SELA/apps/api/services/payment/postgres.go` |
-
 
 ## 5. Model Data
 
@@ -981,7 +979,7 @@ CREATE POLICY tenant_isolation ON subscriptions
 ### 5.3 Enumerasi dan status
 
 | Entitas | Kolom | Nilai |
-|---|---|---|
+| --- | --- | --- |
 | `orgs` | `status` | `active`, `suspended`, `deleted` |
 | `org_members` | `org_role` | `org_owner`, `org_admin`, `org_member` |
 | `org_members` | `status` | `active`, `removed` |
@@ -1002,7 +1000,7 @@ Status langganan `grace` mewakili masa tenggang pembayaran yang `tbd` (OQ-1); en
 ### 5.4 Tambahan skema di produk
 
 | Produk | Tabel atau kolom | Tujuan | Mode | FR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Semua | `entitlement_snapshots` (`org_id`, `version`, `payload`, `signature`, `fetched_at`) | Snapshot entitlement bertanda tangan yang tahan pemadaman platform | `suite` | FR-SUI-02.6 |
 | Semua | `outbox` (pola 2.5.3), `processed_events` (`consumer`, `event_id`, `processed_at`) | Publikasi dan konsumsi idempoten | keduanya | FR-SUI-08.6 |
 | HRS, POS | `tenants.org_id uuid NULL` (unik bila terisi), `tenants.link_status` | Tautan ke org platform | `suite` | FR-SUI-07.5 |
@@ -1017,7 +1015,7 @@ Kolom tautan nullable agar mode standalone tidak berubah; migrasi aditif, dapat 
 Migrasi goose tertanam, `cmd/migrate up|down`, bernomor mulai `0001`. Urutan yang direncanakan (judul `[INFERENCE]`):
 
 | Berkas | Isi |
-|---|---|
+| --- | --- |
 | `0001_identity.sql` | `users`, `orgs`, `org_members`, `invitations`, `member_product_access`, `sessions_meta`; peran aplikasi dan RLS |
 | `0002_rbac.sql` | Katalog RBAC dan seed peran/izin 3.2 |
 | `0003_catalog.sql` | `products`, `features`, `skus`, `sku_items`, `prices` |
@@ -1032,7 +1030,7 @@ Setiap migrasi harus lolos up -> down -> up pada basis data baru di CI (FR-SUI-0
 ### 5.6 Klasifikasi data pribadi
 
 | Data | Lokasi | Kelas | Perlindungan |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Email pengguna dan undangan | `users`, `invitations` | T (terenkripsi) | `piicrypt` + blind index (FR-SUI-SEC.6) |
 | Nama tampilan | `users` | S | RLS tidak berlaku; akses hanya IAM |
 | Hash kata sandi migrasi | `users.password_hash` | Kredensial | Hash terimpor tanpa diubah (FR-SUI-01.3); tidak pernah di log |
@@ -1056,7 +1054,7 @@ Kelas: T = tinggi/terenkripsi, S = sensitif/terbatas, N = non-pribadi.
 ### 6.2 Rute REST platform
 
 | Metode | Path | Izin | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | POST | `/api/v1/auth/otp/request` | publik, dibatasi laju | FR-SUI-01.2 |
 | POST | `/api/v1/auth/otp/verify` | publik, dibatasi laju | FR-SUI-01.2, FR-SUI-01.4 |
 | POST | `/api/v1/auth/logout` | sesi | FR-SUI-01.4 |
@@ -1149,7 +1147,7 @@ service DeliveryService {
 ```
 
 | Layanan | Metode | Pemanggil | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `SessionService` | `Introspect`, `SetAttribute`, `Revoke` | Produk | FR-SUI-01.5, FR-SUI-01.6, FR-SUI-01.7, FR-SUI-01.12 |
 | `EntitlementService` | `Check`, `GetSnapshot`, `ReportUsage` | Produk | FR-SUI-02.4, FR-SUI-02.5, FR-SUI-02.10 |
 | `IntegrationService` | `Publish` | Produk | FR-SUI-07.8 |
@@ -1173,7 +1171,7 @@ Semua metode mengembalikan kode gRPC baku (`InvalidArgument`, `Unauthenticated`,
 ### 6.5 Pemetaan galat
 
 | Kondisi | HTTP | Kode galat | Catatan |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Tidak bersesi | 401 | `unauthorized` | Cookie tidak ada atau tidak sah |
 | Tanpa izin | 403 | `forbidden` | Peran tidak memiliki izin |
 | Fitur tidak berentitlement | 403 | `entitlement_required` | Tersedia untuk upsell di UI `[INFERENCE]` |
@@ -1212,7 +1210,7 @@ sequenceDiagram
 ```
 
 | Langkah | Aturan | Kegagalan |
-|---|---|---|
+| --- | --- | --- |
 | Permintaan OTP | Respons identik untuk alamat dikenal/tidak; pembatas laju per alamat dan per koneksi | 429 `rate_limited` |
 | Verifikasi | 5 salah mengunci alamat 15 menit; kode sekali pakai | 401 tanpa membedakan alasan |
 | Penerbitan sesi | Token acak, hanya HMAC tersimpan, cookie `stery_session` | Dragonfly gagal: 503, tidak ada sesi |
@@ -1241,7 +1239,7 @@ flowchart TD
 ```
 
 | Situasi | Perilaku produk | Dasar |
-|---|---|---|
+| --- | --- | --- |
 | Platform sehat | Hasil `Check` atau snapshot segar | FR-SUI-02.4 |
 | Platform tak terjangkau, snapshot kurang dari 24 jam | Pakai snapshot terakhir (batas 24 jam `tbd`, dapat dikonfigurasi) | D-SUI-04, FR-SUI-02.7 |
 | Platform tak terjangkau, snapshot lebih tua | Fitur berbayar ditolak; fitur dasar dan data tetap dapat dibaca | FR-SUI-02.7 |
@@ -1276,7 +1274,7 @@ sequenceDiagram
 ```
 
 | Langkah | Aturan |
-|---|---|
+| --- | --- |
 | Pembuatan | Satu invoice `open` per langganan; hanya `org_owner`; harga dari `prices` (kosong sampai OQ-1 → checkout dinonaktifkan) |
 | Webhook | Tanda tangan harus sah; jumlah harus sama dengan invoice; notifikasi ulang tidak menggandakan |
 | Aktivasi | Satu transaksi basis data; entitlement versi baru dan event outbox ditulis bersama |
@@ -1304,7 +1302,7 @@ sequenceDiagram
 ```
 
 | Aspek | Aturan |
-|---|---|
+| --- | --- |
 | Pemetaan | Dibuat admin (FR-SUI-07.4); tanpa pemetaan tidak ada tindakan, hanya audit |
 | Efek | Akses POS dicabut dalam 30 detik; pengguna lokal dinonaktifkan secara idempoten |
 | Pembalikan | Mengaktifkan kembali karyawan tidak otomatis mengaktifkan kembali pengguna POS `[INFERENCE]` |
@@ -1335,7 +1333,7 @@ sequenceDiagram
 ```
 
 | Fase | Perilaku produk |
-|---|---|
+| --- | --- |
 | `pending` | Tidak ada perubahan |
 | `confirmed` | Dual-run: login native tetap berfungsi; pemetaan sedang ditinjau |
 | `finalized` | Login hanya lewat platform; pengguna tak berpasangan tidak dapat masuk sampai dipetakan |
@@ -1348,7 +1346,7 @@ Kegagalan di tengah (misalnya `Deliver` tidak sampai) membuat `finalized` menung
 ### 8.1 Model ancaman ringkas
 
 | Ancaman | Kontrol | FR |
-|---|---|---|
+| --- | --- | --- |
 | Pengambilalihan sesi | Cookie HttpOnly, Secure, SameSite; hanya HMAC tersimpan; pencabutan 30 detik | FR-SUI-SEC.1, FR-SUI-SEC.2, FR-SUI-01.7 |
 | Platform sebagai satu titik gagal | Snapshot entitlement 24 jam, standalone mandiri | FR-SUI-02.7, FR-SUI-08.16 |
 | Produk memanggil API platform tanpa hak | Token layanan HMAC, deny-by-default, nonce | FR-SUI-SEC.3, FR-SUI-01.13 |
@@ -1377,7 +1375,7 @@ Satu org = satu tenant platform; RLS paksa (5.2). Produk menjaga isolasi tenantn
 ### 8.5 Perlindungan data pribadi
 
 | Data | Perlindungan | Retensi |
-|---|---|---|
+| --- | --- | --- |
 | Email dan telepon | `piicrypt` AES-256-GCM, AAD per tujuan, blind index | Selama akun aktif; penghapusan lewat FR-SUI-SEC.10 |
 | Log dan audit | Tanpa PII mentah | `tbd` (OQ-F7) |
 | Token layanan dan rahasia | Env, rotasi | Tidak disimpan di basis data |
@@ -1388,7 +1386,7 @@ Satu org = satu tenant platform; RLS paksa (5.2). Produk menjaga isolasi tenantn
 Platform menyimpan identitas pengguna dan metadata organisasi, sehingga termasuk pengendali atau pemroses data pribadi menurut UU No. 27 Tahun 2022 (UU PDP; rujukan norma sama dengan `SELA/CLAUDE.md`). Pemetaan kewajiban ke kontrol:
 
 | Kewajiban `[INFERENCE]` | Kontrol |
-|---|---|
+| --- | --- |
 | Dasar pemrosesan dan persetujuan | Persetujuan pada pendaftaran; teks final `tbd` |
 | Hak akses dan salinan | FR-SUI-SEC.10 |
 | Hak koreksi dan penghapusan | FR-SUI-SEC.10 |
@@ -1412,7 +1410,7 @@ Rahasia hanya di env atau penyimpan rahasia host; rotasi token layanan dengan ma
 Seluruh target kuantitatif yang tidak ditemukan di repo bernilai `tbd` (tidak ada SLA, kuota, atau target latensi di repo mana pun). Referensi NFR berasal dari PRD suite bagian 6.
 
 | Aspek | Spesifikasi teknis | NFR terkait | Verifikasi |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Performa sesi | Introspeksi dilayani cache 30 detik per hash token; pemanggilan `Introspect` hanya saat cache kosong; target latensi p95 `tbd` | NFR-SUI-01 | Tes unit `kit/session` (kadaluarsa cache), uji beban `tbd` |
 | Ketahanan | Snapshot entitlement bertanda tangan dipakai sampai 24 jam saat platform mati (konfigurasi, `tbd`); gagal-tertutup untuk fitur berbayar sesudahnya; tenant standalone tidak terpengaruh | NFR-SUI-02, NFR-SUI-12 | Tes kontrak adapter `Entitlement`; uji matikan platform pada e2e |
 | Ketersediaan platform | Target `tbd`; platform bukan jalur kritis mode standalone; pemulihan: restore basis data lalu Dragonfly (sesi dapat dibuat ulang lewat OTP) | NFR-SUI-03 | Latihan pemulihan `tbd` |
@@ -1444,7 +1442,7 @@ Konsol baru karena platform belum memiliki kode. Layar produk (HRS, POS, SELA) d
 ### 10.1 Konsol platform (`stery-suite/apps/web`)
 
 | Layar | Rute (target) | Peran | Isi utama | FR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Masuk | `/login` | publik | Email, kode OTP, galat terkendali | FR-SUI-06.2 |
 | Pilih atau buat org | `/orgs` | pengguna | Daftar org, buat org | FR-SUI-01.1, FR-SUI-06.4 |
 | Onboarding | `/onboarding` | `org_owner` | Pilih SKU, ringkasan, bayar, produk pertama | FR-SUI-06.3 |
@@ -1461,7 +1459,7 @@ Konsol baru karena platform belum memiliki kode. Layar produk (HRS, POS, SELA) d
 ### 10.2 Layar yang diwajibkan pada produk (mode suite)
 
 | Layar produk | Produk | Isi | FR |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Halaman upsell (entitlement tidak ada) | HRS, POS, SELA | Menjelaskan fitur, tombol ke `upsell_url` konsol | FR-SUI-02.8 |
 | Halaman tanpa akses produk | HRS, POS | Anggota ada tetapi tanpa akses produk | FR-SUI-01.10 |
 | Pengaturan tautan suite | HRS, POS, SELA | Masukkan kode tautan, status tautan | FR-SUI-07.2 |
@@ -1479,7 +1477,7 @@ Dwibahasa dengan tes paritas; WIB dan IDR; label formulir dan galat dapat dibaca
 Status mengikuti definisi 1.3. Baris tabel dihasilkan dari tabel bagian 4; `Sebagian` hanya untuk aset SELA yang dapat dipakai ulang.
 
 | Modul | Jumlah FR | Selesai | Sebagian | Belum | Pending Verification | Ditunda |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | 4.01 IAM | 14 | 0 | 0 | 14 | 0 | 0 |
 | 4.02 ENT | 12 | 0 | 1 | 11 | 0 | 0 |
 | 4.03 BIL | 12 | 0 | 1 | 11 | 0 | 0 |
@@ -1491,9 +1489,8 @@ Status mengikuti definisi 1.3. Baris tabel dihasilkan dari tabel bagian 4; `Seba
 | 4.09 SEC | 12 | 0 | 0 | 12 | 0 | 0 |
 | Total | 102 | 0 | 5 | 97 | 0 | 0 |
 
-
 | ID | Modul | Prioritas | Status | Bukti |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | FR-SUI-01.1 | IAM | M | Belum | Acuan: `SELA/apps/api/services/auth/service.go` |
 | FR-SUI-01.2 | IAM | M | Belum | Acuan: `SELA/apps/api/services/auth/service.go` |
 | FR-SUI-01.3 | IAM | S | Belum | Acuan: `HRIS-Stery/services/auth-service/internal/domain/user.go` |
@@ -1600,7 +1597,7 @@ Status mengikuti definisi 1.3. Baris tabel dihasilkan dari tabel bagian 4; `Seba
 ### 11.2 Matriks BR ke FR
 
 | BR | Kebutuhan bisnis (ringkas) | FR yang menjalankan |
-|---|---|---|
+| --- | --- | --- |
 | BR-SUI-01 | Produk berdiri sendiri | FR-SUI-08.1, FR-SUI-08.2, FR-SUI-08.16, FR-SUI-02.11 |
 | BR-SUI-02 | Bundel dua produk | FR-SUI-02.1, FR-SUI-02.3, FR-SUI-03.2, FR-SUI-03.6 |
 | BR-SUI-03 | Bundel `SUITE` satu login satu tagihan | FR-SUI-02.1, FR-SUI-02.3, FR-SUI-03.2, FR-SUI-01.14, FR-SUI-01.4 |
@@ -1625,7 +1622,7 @@ Status mengikuti definisi 1.3. Baris tabel dihasilkan dari tabel bagian 4; `Seba
 Kontradiksi yang ditemukan saat menyusun FSD ini. Dokumen yang bertentangan dengan kode tidak diulang sebagai fakta; kode yang menang. Dokumen SELA dan `POS-Stery/PRD.md` tidak diubah oleh FSD ini.
 
 | # | Klaim dokumen | Kenyataan | Bukti | Tindak lanjut |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 1 | Lembar jawaban pemilik menyebut 56 tugas Pending Verification | Tracker menghitung 20 Pending Verification dari 105 tugas (76 Completed, 9 Not Started), per 2026-10-25 | `SELA/docs/aidlc/intents/261014-closed-beta-readiness/10-lembar-jawaban-pemilik.md`, `SELA/docs/tracking/tracker.json` | Pemilik menyelaraskan; gerbang S0 memakai tracker |
 | 2 | `FSD_Sela.md` menyebut "v2.1" pada baris 67, 1351, dan 1444 | Header dokumen menyatakan v2.55 | `SELA/docs/FSD_Sela.md` | Perbaiki rujukan versi di SELA |
 | 3 | `PRD_Sela.md` baris 208 menyebut BRD v2.1 dan header menyebut FSD v2.54 | BRD adalah v2.5 dan FSD v2.55 | `SELA/docs/PRD_Sela.md`, `SELA/docs/BRD_Sela.md` | Perbaiki rujukan versi di SELA |
@@ -1653,7 +1650,7 @@ Dokumen ini tidak mengubah kode atau dokumen produk. Nilai komersial (harga HRS,
 Bagian 2 `FSD_HRIS.id.md` dan `FSD_POS.id.md` dibaca saat menyusun dokumen ini (keduanya masih bisa berubah). Titik keselarasan:
 
 | Topik | Keputusan di FSD suite | Rujukan pada FSD produk |
-|---|---|---|
+| --- | --- | --- |
 | Nama peristiwa | HRS `hrs.<agregat>.<kejadian>` (`hrs.employee.terminated`, `hrs.gathering.scheduled`); POS `sales.sale.completed`, `inventory.low_stock`, `supplier.stock.received`, `customer.created`; platform `platform.<agregat>.<kejadian>` | FSD_HRIS 2.5; FSD_POS 2.5 |
 | Cookie sesi | `stery_session` pada mode suite; nama cookie standalone ditentukan produk (HRS: `tbd`; POS: cookie sesi POS) | FSD_HRIS 6; FSD_POS 2.7 |
 | Snapshot entitlement | Kunci Dragonfly `ent:snap:<org>` dan tabel produk `entitlement_snapshots` | FSD_HRIS 2.4 |
@@ -1671,7 +1668,7 @@ Konsekuensi urutan: `kit/port`, `kit/tenantdb`, `kit/outbox`, dan `kit/httpx` ha
 Pertanyaan komersial dan arsitektural suite (OQ-1 sampai OQ-10) berada di BRD/analisis dan tidak diulang. Pertanyaan berikut muncul saat merinci FSD dan perlu keputusan pemilik; nilai bawaan yang dipakai dokumen ini tertulis di kolom kedua.
 
 | ID | Pertanyaan | Bawaan yang dipakai dokumen ini |
-|---|---|---|
+| --- | --- | --- |
 | OQ-F1 | TTL sesi platform | Mengikuti SELA (12 jam), `tbd` |
 | OQ-F2 | Lokasi paket `kit/port` | `kit/port` pada modul `kit` `[INFERENCE]` |
 | OQ-F3 | `kit` sebagai modul Go terpisah dan skema tag | Modul terpisah dengan tag `kit/vX.Y.Z` `[INFERENCE]` |

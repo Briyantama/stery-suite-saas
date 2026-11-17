@@ -48,7 +48,7 @@ Business problems solved: (1) selling packages with one organisation, one login,
 Customer segment: `tbd` (there is no target segment statement for HRIS/POS/suite in the repo; open question OQ-10). SELA already names B2C and B2B2C segments for events (BRD Sela section 3).
 
 | Package (SKU) | Products included | Supported modes | Notes |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `HRS` | HRIS-Stery | standalone, suite | Dimension `hrs.employees.max`; tiers and price `tbd` |
 | `POS` | POS-Stery | standalone, suite | Dimensions `pos.stores.max`, `pos.devices.max`; tiers and price `tbd` |
 | `SEL` | SELA | standalone, suite | Existing Gratis/Hemat/Standar/Premium/Partner packages |
@@ -69,7 +69,7 @@ Customer segment: `tbd` (there is no target segment statement for HRIS/POS/suite
 ### 4.3 Deferred
 
 | Item | Reason for deferral | Condition to open |
-|---|---|---|
+| --- | --- | --- |
 | Cross-product integrations INT-1 (HRIS employee staff link <-> POS user), INT-2 (HRIS gathering creates a SELA event), INT-3 (POS store event creates a SELA event and invites opted-in loyalty customers) | Hypothesis; demand validation not yet done | Evidence of customer demand and completion of S4 (phase S5) |
 | Fourth and later products | Product Contract not yet tested with a trial product | S5 |
 | HRIS payroll, tax, recruitment, performance (HRS modules 09-12) | Deferred by ADR-0004; legal review of PPh 21, BPJS, THR needed | Legal review and owner decision |
@@ -89,7 +89,7 @@ Customer segment: `tbd` (there is no target segment statement for HRIS/POS/suite
 ## 5. Stakeholders
 
 | Stakeholder | Role | Interest |
-|---|---|---|
+| --- | --- | --- |
 | Product owner / business sponsor | Setting prices, bundles, open decisions OQ-1..OQ-10 | Package revenue, risk control |
 | Engineering lead | Architecture, alignment order S0-S5 | A workload a small team can handle (RISK-SUI-08) |
 | Organisation customer (organisation owner/admin) | Buys packages, manages members and products | One login, one invoice, products can be bought separately |
@@ -104,7 +104,7 @@ Customer segment: `tbd` (there is no target segment statement for HRIS/POS/suite
 Priority: M = Must, S = Should, C = Could. Each BR is mapped to FRs in FSD_Stery_Suite section 11.2.
 
 | **ID** | **Business Requirement** | **Priority** |
-|---|---|---|
+| --- | --- | --- |
 | BR-SUI-01 | Each product (`HRS`, `POS`, `SEL`) can be sold and used independently, without the platform and without any other product. | M |
 | BR-SUI-02 | Any two products can be sold as a bundle (`HRS+POS`, `HRS+SEL`, `POS+SEL`) with one organisation and one invoice. | M |
 | BR-SUI-03 | All three products can be sold as the `SUITE` bundle with one organisation, one login, and one invoice. | M |
@@ -131,7 +131,7 @@ Model: organisation subscriptions for HRS, POS, and bundles billed by the platfo
 ### 7.1 SKU matrix
 
 | SKU | Products | Standalone mode | Suite mode | Billing | Price |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `HRS` | HRS | Available (without platform) | Available | Standalone: outside the platform, `tbd`; suite: platform subscription | `tbd` |
 | `POS` | POS | Available | Available | Same as `HRS` | `tbd` |
 | `SEL` | SEL | Available (SELA per-event checkout) | Available (SELA per-event checkout stays in SELA, D-SUI-05) | Per-event in SELA | See 7.3 |
@@ -147,7 +147,7 @@ Bundle discount rules, billing cycle (monthly/annual), and trial period: `tbd` (
 Dimension names are fixed; SELA values come from the `plans` table; other values are `tbd`.
 
 | Dimension | Product | Gratis | Hemat | Standar | Premium | Partner | Value source |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `hrs.employees.max` | HRS | `tbd` | `tbd` | `tbd` | `tbd` | `tbd` | Not yet in repo |
 | `pos.stores.max` | POS | `tbd` | `tbd` | `tbd` | `tbd` | `tbd` | Not yet in repo |
 | `pos.devices.max` | POS | `tbd` | `tbd` | `tbd` | `tbd` | `tbd` | Not yet in repo |
@@ -162,7 +162,7 @@ Package tiers for HRS and POS (names and number) `tbd`. HRS tiers are bounded by
 ### 7.3 Existing SELA package prices (per event)
 
 | Package | Price | Source |
-|---|---|---|
+| --- | --- | --- |
 | Gratis | Rp0 | `SELA/docs/BRD_Sela.md` section 7 |
 | Hemat | Rp39.000 | `PLAN_PRICE_IDR_HEMAT=39000` in `SELA/.env.example` |
 | Standar | Rp129.000 | `PLAN_PRICE_IDR_STANDAR=129000` |
@@ -180,7 +180,7 @@ Package tiers for HRS and POS (names and number) `tbd`. HRS tiers are bounded by
 ### 8.1 Architecture options
 
 | Option | Description | Decision |
-|---|---|---|
+| --- | --- | --- |
 | A. Polyrepo + platform | The three product repos remain; a new repo `stery-suite` holds the platform and `kit` | **Chosen** (D-SUI-01) |
 | B. Monorepo | One repo for all products and the platform | Not chosen: moves three git histories and forces one CI pipeline for products sold separately |
 | C. Single codebase/runtime | One application and one database | **Rejected**: violates per-product standalone sales, enlarges blast radius, complicates UU PDP |
@@ -192,7 +192,7 @@ Detailed comparison is in `00_Analisis_Dampak_Risiko` section 5.
 Competitor data for the HRIS/POS/suite packages is not yet in the repo; all content is `tbd` and must not be filled in without research.
 
 | Comparison category | Players | Pricing model | Strengths/weaknesses |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Integrated HR + cashier + events suite | `tbd` | `tbd` | `tbd` |
 | Local HRIS (UU PDP, PPh 21, BPJS) | `tbd` | `tbd` | `tbd` |
 | Local POS (QRIS, PPN, receipt) | `tbd` | `tbd` | `tbd` |
@@ -206,7 +206,7 @@ Research questions: (1) do SME customers buy HRIS and POS from a single vendor? 
 The following decisions are embedded in the documents and may be changed by the owner; changing one decision means re-drafting the documents that reference it.
 
 | ID | Decision | Summary |
-|---|---|---|
+| --- | --- | --- |
 | D-SUI-01 | Composition, not consolidation | The three products remain separate deployables with separate databases. A fourth deployable, the `stery-suite` platform, holds organisation/identity, entitlement, billing, notification hub, audit sink, and console. Shared Go code in `stery-suite/kit` (lifted from SELA `internal/{httpx,config,db,testdb,audit,piicrypt,objstore,health}`, plus `tenantdb`, `session`, `outbox`). |
 | D-SUI-02 | Two modes per product | Env `STERY_MODE=standalone\|suite`, default `standalone`. `standalone` = current behaviour (own users, sessions, packages). `suite` = the product delegates identity, entitlement, billing, notification, audit to the platform through the Go ports `Identity`, `Tenant`, `Entitlement`, `Notification`, `Audit`, `Events` with two adapters each. |
 | D-SUI-03 | Identity in suite mode | The platform issues an opaque session in the HttpOnly cookie `stery_session` (parent domain, value `tbd`); only its hash is stored in the platform Dragonfly. Products validate through gRPC `stery.platform.v1.SessionService/Introspect` with a 30-second local cache, a deny-by-default interceptor, and a service HMAC token. No JWT. |
@@ -241,7 +241,7 @@ The following decisions are embedded in the documents and may be changed by the 
 Full risk definitions are in `00_Analisis_Dampak_Risiko` section 4; the following table summarises their business impact.
 
 | **Risk** | **Business impact** | **Mitigation** |
-|---|---|---|
+| --- | --- | --- |
 | RISK-SUI-01 No shared tenancy/identity/entitlement/billing foundation | Packages cannot be sold | Build the platform (S1, S4); BR-SUI-08 through BR-SUI-10 |
 | RISK-SUI-03 HRIS/POS alignment is an infrastructure rewrite | Schedule slips | Keep domain/application; one alignment at a time |
 | RISK-SUI-07 Blast radius and UU PDP (SELA public uploads vs HRIS NIK/NPWP) | Legal and reputational risk | Separate database, bucket, and role per product; PII encryption |
@@ -255,7 +255,7 @@ Full risk definitions are in `00_Analisis_Dampak_Risiko` section 4; the followin
 Definitions only; all targets are `tbd` because there is no baseline in the repo.
 
 | KPI | Definition | Target |
-|---|---|---|
+| --- | --- | --- |
 | Active organisations | Number of organisations with at least one active entitlement | `tbd` |
 | Bundle penetration | Percentage of organisations with two or more products | `tbd` |
 | Migration conversion | Percentage of standalone customers moved to the suite without data loss | `tbd` |
@@ -270,7 +270,7 @@ Definitions only; all targets are `tbd` because there is no baseline in the repo
 Durations and dates `tbd` (there are no time estimates in the repo; the owner sets them after reviewing section 6 of the analysis).
 
 | Phase | Scope | Exit gate | Estimate |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | S0 | Documents + SELA closed-beta closure | SELA stabilisation gate (analysis section 7) | `tbd` |
 | S1 | `kit` extraction; platform IAM and ENT | `kit` used by SELA with no behaviour change | `tbd` |
 | S2 | POS alignment | POS stabilisation gate | `tbd` |
@@ -285,7 +285,7 @@ Durations and dates `tbd` (there are no time estimates in the repo; the owner se
 Status as of 6 November 2026. Readiness estimates are in analysis section 3 and marked `[INFERENCE]`.
 
 | Product | Status | Summary | Evidence |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | SELA (`SEL`) | Partial | 427 commits (last 2026-10-26); 76 of 105 tasks Completed, 20 Pending Verification, 9 Not Started (tracker 2026-10-25); Midtrans webhook not yet proven on a public URL; retention conflict not yet decided | `SELA/docs/tracking/tracker.json`, `SELA/apps/api/go.mod`, `SELA/docs/BRD_Sela.md` |
 | POS-Stery (`POS`) | Partial | 21 commits (last 2026-06-30); six real gRPC services; `AddLoyaltyPoints` has no caller; dashboard uses a fabricated 55/30/15 payment mix; stale CI (Laravel job) | `POS-Stery/PRD.md`, `POS-Stery/services/customer-service/internal/application/commands/add_loyalty_points.go`, `POS-Stery/.github/workflows/ci.yml` |
 | HRIS-Stery (`HRS`) | Partial | 33 commits (last 2026-06-10); 39 of 47 RPCs have real handlers; attendance migration invalid; no HTTP mux mounted; web login still mocked | `HRIS-Stery/services/attendance-service/migrations/001_create_attendance_schema.up.sql`, `HRIS-Stery/apps/web/src/routes/(auth)/login/+page.server.ts`, `HRIS-Stery/docs/adr/0004-defer-payroll-to-phase2.md` |
@@ -294,7 +294,7 @@ Status as of 6 November 2026. Readiness estimates are in analysis section 3 and 
 ### 13.2 Status per platform module
 
 | Module | Status | Notes | Evidence |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | SUI 01 IAM | Not started | No code; SELA only has local OTP | `SELA/apps/api/services/auth/http.go` |
 | SUI 02 ENT | Not started | SELA only has per-event `events.package` -> `plans` | `SELA/apps/api/services/payment/postgres.go` |
 | SUI 03 BIL | Not started | SELA's payment provider can be reused (Midtrans + sandbox) | `SELA/apps/api/services/payment/provider.go` |
